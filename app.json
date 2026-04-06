@@ -9,7 +9,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.c4ptain-pl0uf.App-React-Native-Supabase"
     },
     "android": {
       "adaptiveIcon": {
@@ -38,11 +39,19 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "1e14c919-6a3d-4123-b186-9615abb79005"
+      }
+    },
+    "owner": "c4ptain_pl0uf"
   }
 }
