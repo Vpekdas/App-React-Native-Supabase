@@ -12,8 +12,8 @@ export type ThemedTextInputProps = TextInputProps & {
 
 export function ThemedTextInput({ style, lightColor, darkColor, label, error, ...rest }: ThemedTextInputProps) {
     const textColor = useThemeColor({ light: lightColor, dark: darkColor }, "text");
-
-    const backgroundColor = useThemeColor({}, "background");
+    const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, "background");
+    const borderColor = useThemeColor({ light: lightColor, dark: darkColor }, "border");
 
     return (
         <View style={styles.container}>
@@ -24,7 +24,7 @@ export function ThemedTextInput({ style, lightColor, darkColor, label, error, ..
                     styles.input,
                     {
                         color: textColor,
-                        borderColor: textColor,
+                        borderColor: borderColor,
                         backgroundColor,
                     },
                     style,
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     },
     input: {
         height: 44,
-        borderWidth: 1,
+        borderWidth: 2,
         borderRadius: 8,
         paddingHorizontal: 12,
         marginTop: 6,
