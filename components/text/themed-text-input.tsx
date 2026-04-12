@@ -1,22 +1,31 @@
-import { ThemedText } from "@/components/themed-text";
+import { ThemedText } from "@/components/text/themed-text";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import React from "react";
-import { StyleSheet, TextInput, TextInputProps, View } from "react-native";
+import { StyleSheet, TextInput, TextInputProps, View, ViewStyle } from "react-native";
 
 export type ThemedTextInputProps = TextInputProps & {
     lightColor?: string;
     darkColor?: string;
     label?: string;
     error?: string;
+    viewStyle?: ViewStyle;
 };
 
-export function ThemedTextInput({ style, lightColor, darkColor, label, error, ...rest }: ThemedTextInputProps) {
+export function ThemedTextInput({
+    style,
+    lightColor,
+    darkColor,
+    label,
+    error,
+    viewStyle,
+    ...rest
+}: ThemedTextInputProps) {
     const textColor = useThemeColor({ light: lightColor, dark: darkColor }, "text");
     const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, "background");
     const borderColor = useThemeColor({ light: lightColor, dark: darkColor }, "border");
 
     return (
-        <View style={styles.container}>
+        <View style={viewStyle}>
             {label && <ThemedText type="defaultSemiBold">{label}</ThemedText>}
 
             <TextInput
@@ -43,14 +52,9 @@ export function ThemedTextInput({ style, lightColor, darkColor, label, error, ..
 }
 
 const styles = StyleSheet.create({
-    container: {
-        marginBottom: 12,
-    },
     input: {
-        height: 44,
         borderWidth: 2,
         borderRadius: 8,
-        paddingHorizontal: 12,
         marginTop: 6,
     },
     error: {

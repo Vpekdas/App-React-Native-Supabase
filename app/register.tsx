@@ -1,32 +1,57 @@
 import { router } from "expo-router";
-import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import { Keyboard, StyleSheet, TouchableWithoutFeedback } from "react-native";
 
-import { ThemedText } from "@/components/themed-text";
-import { ThemedTextInput } from "@/components/themed-text-input";
-import { ThemedView } from "@/components/themed-view";
+import { ThemedText } from "@/components/text/themed-text";
+import { ThemedTextInput } from "@/components/text/themed-text-input";
 import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
 
+import { ThemedPicker } from "@/components/picker/themed-picker";
+import { ThemedView } from "@/components/view/themed-view";
 import { supabase } from "@/lib/supabase";
 import { makeRedirectUri } from "expo-auth-session";
-import { Button } from "react-native";
+
+import ThemedButton from "@/components/buttons/themed-button";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function Register() {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
-    const [educationYear, setEducationYear] = useState("");
-    const [userType, setUserType] = useState("");
+    const [educationYear, setEducationYear] = useState("1");
+    const [userType, setUserType] = useState("student");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
 
-    const [error, setError] = useState<string | undefined>();
+    const [errors, setErrors] = useState<{
+        firstName?: string;
+        lastName?: string;
+        email?: string;
+        password?: string;
+        confirmPassword?: string;
+    }>({});
 
     async function signUpNewUser() {
-        setError(undefined);
+        setErrors({});
+
+        const newErrors: typeof errors = {};
+
+        if (!firstName) newErrors.firstName = "First name cannot be empty";
+        if (!lastName) newErrors.lastName = "Last name cannot be empty";
+        if (!email) newErrors.email = "Email cannot be empty";
+        if (!password) newErrors.password = "Password cannot be empty";
+        if (password !== confirmPassword) {
+            newErrors.confirmPassword = "Passwords do not match";
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
 
         const redirectTo = makeRedirectUri({
             scheme: "App-React-Native-Supabase",
-            path: "/auth",
+            path: "auth",
         });
 
         const { data, error } = await supabase.auth.signUp({
@@ -44,7 +69,7 @@ export default function Register() {
         });
 
         if (error) {
-            setError(error.message);
+            console.log(error.message);
             return;
         }
 
@@ -52,80 +77,137 @@ export default function Register() {
     }
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.mainContainer}>
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <ThemedView style={styles.container}>
-                    <ThemedText type="title">Register</ThemedText>
-                    <ThemedTextInput
-                        label="First Name"
-                        placeholder="First Name"
-                        value={firstName}
-                        onChangeText={setFirstName}
-                        keyboardType="default"
-                        error={error}
-                    />
-                    <ThemedTextInput
-                        label="Last Name"
-                        placeholder="Last Name"
-                        value={lastName}
-                        onChangeText={setLastName}
-                        keyboardType="default"
-                        error={error}
-                    />
-                    <ThemedTextInput
-                        label="Email"
-                        placeholder="Email"
-                        value={email}
-                        onChangeText={setEmail}
-                        keyboardType="email-address"
-                        error={error}
-                    />
-                    <ThemedTextInput
-                        label="Education Year"
-                        placeholder="Education Year"
-                        value={educationYear}
-                        onChangeText={setEducationYear}
-                        keyboardType="numeric"
-                        error={error}
-                    />
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <KeyboardAwareScrollView
+                contentContainerStyle={styles.container}
+                enableOnAndroid
+                keyboardShouldPersistTaps="handled"
+            >
+                <ThemedText type="title" style={styles.title}>
+                    Register
+                </ThemedText>
 
-                    <Picker
+                <ThemedTextInput
+                    label="First Name"
+                    placeholder="First Name"
+                    value={firstName}
+                    onChangeText={setFirstName}
+                    error={errors.firstName}
+                    style={styles.input}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    autoComplete="off"
+                    textContentType="none"
+                    importantForAutofill="no"
+                />
+
+                <ThemedTextInput
+                    label="Last Name"
+                    placeholder="Last Name"
+                    value={lastName}
+                    onChangeText={setLastName}
+                    error={errors.lastName}
+                    style={styles.input}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    autoComplete="off"
+                    textContentType="none"
+                    importantForAutofill="no"
+                />
+
+                <ThemedTextInput
+                    label="Email"
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    error={errors.email}
+                    style={styles.input}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    autoComplete="off"
+                    textContentType="none"
+                    importantForAutofill="no"
+                />
+
+                <ThemedView style={{ marginBottom: 12 }}>
+                    <ThemedPicker
+                        label="Education Year"
+                        selectedValue={educationYear}
+                        onValueChange={(itemValue) => setEducationYear(itemValue as string)}
+                        style={styles.picker}
+                    >
+                        <Picker.Item label="1" value="1" />
+                        <Picker.Item label="2" value="2" />
+                        <Picker.Item label="3" value="3" />
+                    </ThemedPicker>
+                </ThemedView>
+
+                <ThemedView style={{ marginBottom: 12 }}>
+                    <ThemedPicker
+                        label="User Type"
                         selectedValue={userType}
-                        onValueChange={(itemValue) => setUserType(itemValue)}
+                        onValueChange={(itemValue) => setUserType(itemValue as string)}
                         style={styles.picker}
                     >
                         <Picker.Item label="Student" value="student" />
                         <Picker.Item label="Chartered Accountant" value="chartered_accountant" />
-                    </Picker>
-
-                    <ThemedTextInput
-                        label="Password"
-                        placeholder="Password"
-                        value={password}
-                        onChangeText={setPassword}
-                        keyboardType="default"
-                        error={error}
-                        secureTextEntry={true}
-                    />
-                    <Button title="Sign in" onPress={signUpNewUser} />
+                    </ThemedPicker>
                 </ThemedView>
-            </TouchableWithoutFeedback>
-        </KeyboardAvoidingView>
+
+                <ThemedTextInput
+                    label="Password"
+                    placeholder="Password"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                    error={errors.password}
+                    style={styles.input}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    autoComplete="off"
+                    textContentType="none"
+                    importantForAutofill="no"
+                />
+
+                <ThemedTextInput
+                    label="Confirm Password"
+                    placeholder="Password"
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    secureTextEntry
+                    error={errors.confirmPassword}
+                    style={styles.input}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    autoComplete="off"
+                    textContentType="none"
+                    importantForAutofill="no"
+                />
+
+                <ThemedButton title="Sign up" onPress={signUpNewUser} />
+            </KeyboardAwareScrollView>
+        </TouchableWithoutFeedback>
     );
 }
 
 const styles = StyleSheet.create({
-    mainContainer: {
-        flex: 1,
-    },
     container: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
+        flexGrow: 1,
         padding: 20,
     },
+
+    input: {
+        marginBottom: 10,
+        padding: 10,
+    },
+
     picker: {
-        height: 200,
-        width: 200,
+        marginBottom: 12,
+    },
+
+    title: {
+        alignSelf: "center",
+        marginBottom: 20,
     },
 });

@@ -3,12 +3,12 @@ import { StyleSheet } from "react-native";
 
 import SignOutButton from "@/components/buttons/sign-out-button";
 import ParallaxScrollView from "@/components/parallax-scroll-view";
-import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
+import { ThemedText } from "@/components/text/themed-text";
+import { ThemedView } from "@/components/view/themed-view";
 import { useAuthContext } from "@/hooks/use-auth-context";
 
 export default function HomeScreen() {
-    const { profile } = useAuthContext();
+    const { profile, isLoading } = useAuthContext();
 
     return (
         <ParallaxScrollView
@@ -18,12 +18,15 @@ export default function HomeScreen() {
             <ThemedView style={styles.titleContainer}>
                 <ThemedText type="title">Welcome!</ThemedText>
             </ThemedView>
+
             <ThemedView style={styles.stepContainer}>
                 <ThemedText type="subtitle">Username</ThemedText>
                 <ThemedText>{profile?.first_name}</ThemedText>
+
                 <ThemedText type="subtitle">Full name</ThemedText>
                 <ThemedText>{profile?.last_name}</ThemedText>
             </ThemedView>
+
             <SignOutButton />
         </ParallaxScrollView>
     );

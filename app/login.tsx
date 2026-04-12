@@ -1,13 +1,14 @@
-import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import { Keyboard, StyleSheet, TouchableWithoutFeedback } from "react-native";
 
-import { ThemedText } from "@/components/themed-text";
-import { ThemedTextInput } from "@/components/themed-text-input";
-import { ThemedView } from "@/components/themed-view";
+import { ThemedText } from "@/components/text/themed-text";
+import { ThemedTextInput } from "@/components/text/themed-text-input";
+import { ThemedView } from "@/components/view/themed-view";
 import { useState } from "react";
 
 import ThemedButton from "@/components/buttons/themed-button";
 import { supabase } from "@/lib/supabase";
-import { Link } from "@react-navigation/native";
+import { Link } from "expo-router";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -28,12 +29,16 @@ export default function Login() {
     }
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.mainContainer}>
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <ThemedView style={styles.container}>
-                    <ThemedText type="title" style={styles.title}>
-                        Login
-                    </ThemedText>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <KeyboardAwareScrollView
+                contentContainerStyle={styles.container}
+                enableOnAndroid
+                keyboardShouldPersistTaps="handled"
+            >
+                <ThemedText type="title" style={styles.title}>
+                    Login
+                </ThemedText>
+                <ThemedView style={styles.inputContainer}>
                     <ThemedTextInput
                         label="Email"
                         placeholder="Email"
@@ -42,52 +47,75 @@ export default function Login() {
                         keyboardType="email-address"
                         error={error}
                         style={styles.input}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        autoComplete="off"
+                        textContentType="none"
+                        importantForAutofill="no"
                     />
+
                     <ThemedTextInput
                         label="Password"
                         placeholder="Password"
                         value={password}
                         onChangeText={setPassword}
-                        keyboardType="default"
+                        secureTextEntry
                         error={error}
-                        secureTextEntry={true}
                         style={styles.input}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        autoComplete="off"
+                        textContentType="none"
+                        importantForAutofill="no"
                     />
+
                     <ThemedView style={styles.register}>
-                        <ThemedText>Does not have an account ?</ThemedText>
-                        <Link screen="register" params={{ id: "" }}>
-                            Click here !
+                        <ThemedText>Does not have an account ? </ThemedText>
+                        <Link href="/register">
+                            <ThemedText style={{ color: "#0a7ea4" }}>Click here !</ThemedText>
                         </Link>
                     </ThemedView>
-                    <ThemedButton title={"Sign in"} onPress={signIn}></ThemedButton>
+
+                    <ThemedView style={styles.register}>
+                        <ThemedText>Forgot your password ? </ThemedText>
+                        <Link href="/forgot-password">
+                            <ThemedText style={{ color: "#0a7ea4" }}>Reset password</ThemedText>
+                        </Link>
+                    </ThemedView>
+
+                    <ThemedButton style={styles.button} title="Sign in" onPress={signIn} />
                 </ThemedView>
-            </TouchableWithoutFeedback>
-        </KeyboardAvoidingView>
+            </KeyboardAwareScrollView>
+        </TouchableWithoutFeedback>
     );
 }
 
 const styles = StyleSheet.create({
-    mainContainer: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-    },
     container: {
-        width: "100%",
-        height: "100%",
+        flexGrow: 1,
         justifyContent: "center",
+        padding: 20,
+    },
+
+    inputContainer: {
+        marginTop: 20,
+    },
+
+    input: {
+        marginBottom: 12,
         padding: 10,
-        gap: 10,
     },
+
     register: {
-        alignContent: "center",
-        justifyContent: "center",
         flexDirection: "row",
+        justifyContent: "center",
         alignItems: "center",
-        gap: 2,
+        marginTop: 10,
     },
-    input: {},
+
     title: {
         alignSelf: "center",
     },
+
+    button: { marginTop: 10 },
 });
