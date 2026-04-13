@@ -4,7 +4,7 @@ import { StyleSheet } from "react-native";
 import SignOutButton from "@/components/buttons/sign-out-button";
 import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedText } from "@/components/text/themed-text";
-import { ThemedView } from "@/components/view/themed-view";
+import { ThemedView } from "@/components/themed-view";
 import { useAuthContext } from "@/hooks/use-auth-context";
 
 export default function HomeScreen() {

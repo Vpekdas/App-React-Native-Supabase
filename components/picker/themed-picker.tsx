@@ -32,7 +32,6 @@ const styles = StyleSheet.create({
     container: {
         borderRadius: 8,
         borderWidth: 1,
-        overflow: "hidden",
     },
     label: {
         marginBottom: 6,

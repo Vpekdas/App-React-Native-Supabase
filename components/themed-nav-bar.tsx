@@ -24,6 +24,23 @@ export default function NavBar() {
                     tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
                 }}
             />
+
+            <Tabs.Screen
+                name="search"
+                options={{
+                    title: "search",
+                    tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.crop.circle.fill" color={color} />,
+                }}
+            />
+
+            <Tabs.Screen
+                name="resume"
+                options={{
+                    title: "resume",
+                    tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.crop.circle.fill" color={color} />,
+                }}
+            />
+
             <Tabs.Screen
                 name="account"
                 options={{

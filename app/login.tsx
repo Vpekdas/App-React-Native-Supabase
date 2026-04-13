@@ -2,7 +2,7 @@ import { Keyboard, StyleSheet, TouchableWithoutFeedback } from "react-native";
 
 import { ThemedText } from "@/components/text/themed-text";
 import { ThemedTextInput } from "@/components/text/themed-text-input";
-import { ThemedView } from "@/components/view/themed-view";
+import { ThemedView } from "@/components/themed-view";
 import { useState } from "react";
 
 import ThemedButton from "@/components/buttons/themed-button";

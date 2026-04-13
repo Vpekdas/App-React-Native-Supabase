@@ -7,7 +7,7 @@ import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
 
 import { ThemedPicker } from "@/components/picker/themed-picker";
-import { ThemedView } from "@/components/view/themed-view";
+import { ThemedView } from "@/components/themed-view";
 import { supabase } from "@/lib/supabase";
 import { makeRedirectUri } from "expo-auth-session";
 
@@ -20,6 +20,7 @@ export default function Register() {
     const [email, setEmail] = useState("");
     const [educationYear, setEducationYear] = useState("1");
     const [userType, setUserType] = useState("student");
+    const [theme, setTheme] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -64,6 +65,7 @@ export default function Register() {
                     last_name: lastName,
                     education_year: Number(educationYear),
                     user_type: userType,
+                    theme: theme,
                 },
             },
         });
@@ -132,19 +134,6 @@ export default function Register() {
 
                 <ThemedView style={{ marginBottom: 12 }}>
                     <ThemedPicker
-                        label="Education Year"
-                        selectedValue={educationYear}
-                        onValueChange={(itemValue) => setEducationYear(itemValue as string)}
-                        style={styles.picker}
-                    >
-                        <Picker.Item label="1" value="1" />
-                        <Picker.Item label="2" value="2" />
-                        <Picker.Item label="3" value="3" />
-                    </ThemedPicker>
-                </ThemedView>
-
-                <ThemedView style={{ marginBottom: 12 }}>
-                    <ThemedPicker
                         label="User Type"
                         selectedValue={userType}
                         onValueChange={(itemValue) => setUserType(itemValue as string)}
@@ -154,6 +143,36 @@ export default function Register() {
                         <Picker.Item label="Chartered Accountant" value="chartered_accountant" />
                     </ThemedPicker>
                 </ThemedView>
+
+                {userType === "student" && (
+                    <ThemedView style={{ marginBottom: 12 }}>
+                        <ThemedPicker
+                            label="Education Year"
+                            selectedValue={educationYear}
+                            onValueChange={(itemValue) => setEducationYear(itemValue as string)}
+                            style={styles.picker}
+                        >
+                            <Picker.Item label="1" value="1" />
+                            <Picker.Item label="2" value="2" />
+                            <Picker.Item label="3" value="3" />
+                        </ThemedPicker>
+                    </ThemedView>
+                )}
+
+                {userType === "chartered_accountant" && (
+                    <ThemedView style={{ marginBottom: 12 }}>
+                        <ThemedPicker
+                            label="Theme"
+                            selectedValue={theme}
+                            onValueChange={(itemValue) => setTheme(itemValue as string)}
+                            style={styles.picker}
+                        >
+                            <Picker.Item label="Audit" value="audit" />
+                            <Picker.Item label="Comptabilite" value="comptabilite" />
+                            <Picker.Item label="Management" value="management" />
+                        </ThemedPicker>
+                    </ThemedView>
+                )}
 
                 <ThemedTextInput
                     label="Password"
