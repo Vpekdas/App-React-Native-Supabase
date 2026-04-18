@@ -1,10 +1,11 @@
-import { Keyboard, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import { Keyboard, Platform, StyleSheet, TouchableWithoutFeedback } from "react-native";
 
 import { ThemedText } from "@/components/text/themed-text";
 import { ThemedTextInput } from "@/components/text/themed-text-input";
 import { ThemedView } from "@/components/themed-view";
 import { useState } from "react";
 
+import Background from "@/components/background";
 import ThemedButton from "@/components/buttons/themed-button";
 import { supabase } from "@/lib/supabase";
 import { Link } from "expo-router";
@@ -28,8 +29,8 @@ export default function Login() {
         }
     }
 
-    return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    const content = (
+        <Background>
             <KeyboardAwareScrollView
                 contentContainerStyle={styles.container}
                 enableOnAndroid
@@ -86,24 +87,36 @@ export default function Login() {
                     <ThemedButton style={styles.button} title="Sign in" onPress={signIn} />
                 </ThemedView>
             </KeyboardAwareScrollView>
-        </TouchableWithoutFeedback>
+        </Background>
     );
+
+    if (Platform.OS === "web") {
+        return content;
+    }
+
+    return <TouchableWithoutFeedback onPress={Keyboard.dismiss}>{content}</TouchableWithoutFeedback>;
 }
 
 const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
         justifyContent: "center",
-        padding: 20,
+        alignItems: "center",
+        flex: 1,
     },
 
     inputContainer: {
         marginTop: 20,
+        justifyContent: "center",
+        flexDirection: "column",
+        borderRadius: 20,
+        padding: 10,
     },
 
     input: {
         marginBottom: 12,
         padding: 10,
+        flex: 1,
     },
 
     register: {

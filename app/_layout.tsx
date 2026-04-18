@@ -1,6 +1,7 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { StyleSheet } from "react-native";
 import "react-native-reanimated";
 
 import { SplashScreenController } from "@/components/splash-screen-controller";
@@ -22,9 +23,10 @@ function RootNavigator() {
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             </Stack.Protected>
             <Stack.Protected guard={!isLoggedIn}>
-                <Stack.Screen name="login" options={{ headerShown: false }} />
+                <Stack.Screen name="index" options={{ headerShown: false }} />
             </Stack.Protected>
             <Stack.Screen name="register" options={{ headerShown: true, title: "" }} />
+            <Stack.Screen name="login" options={{ headerShown: true, title: "" }} />
         </Stack>
     );
 }
@@ -32,9 +34,11 @@ function RootNavigator() {
 export default function RootLayout() {
     const colorScheme = useColorScheme();
 
+    const isDark = colorScheme === "dark";
+
     return (
         <SafeAreaProvider>
-            <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+            <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
                 <AuthProvider>
                     <SplashScreenController />
                     <RootNavigator />
@@ -44,3 +48,17 @@ export default function RootLayout() {
         </SafeAreaProvider>
     );
 }
+
+const styles = StyleSheet.create({
+    background: {
+        position: "absolute",
+        left: 0,
+        right: 0,
+        top: 0,
+        height: "100%",
+    },
+    image: {
+        flex: 1,
+        justifyContent: "center",
+    },
+});
