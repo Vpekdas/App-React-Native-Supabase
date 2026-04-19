@@ -6,7 +6,8 @@ export type UserProfile = {
     last_name: string;
     education_year: number;
     user_type: "student" | "chartered_accountant";
-    avatar_url?: string;
+    topic: string[];
+    topic_description: string;
 };
 
 export type AuthData = {

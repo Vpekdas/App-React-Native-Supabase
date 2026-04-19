@@ -1,27 +1,23 @@
-import { useThemeColor } from "@/hooks/use-theme-color";
-import { StyleSheet } from "react-native";
+import { Colors } from "@/constants/theme";
+import { StyleSheet, useColorScheme } from "react-native";
 import { ThemedText } from "../text/themed-text";
 import { ThemedView } from "../themed-view";
 
 export type ProfileProps = {
-    name: string;
-    theme: string;
-    lightColor?: string;
-    darkColor?: string;
+    topic: string;
+    description: string;
 };
 
-export default function ThemedProfileCard({ name, theme, lightColor, darkColor }: ProfileProps) {
-    const textColor = useThemeColor({ light: lightColor, dark: darkColor }, "text");
-    const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, "background");
-    const borderColor = useThemeColor({ light: lightColor, dark: darkColor }, "border");
-    const tintColor = useThemeColor({ light: lightColor, dark: darkColor }, "tint");
+export default function ThemedProfileCard({ topic, description }: ProfileProps) {
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? "light"];
 
     return (
         <ThemedView
             style={[
                 {
-                    borderColor: borderColor,
-                    backgroundColor: backgroundColor,
+                    borderColor: theme.border,
+                    backgroundColor: theme.background,
                 },
                 styles.container,
             ]}
@@ -30,23 +26,23 @@ export default function ThemedProfileCard({ name, theme, lightColor, darkColor }
                 style={[
                     styles.name,
                     {
-                        color: textColor,
-                        backgroundColor: backgroundColor,
+                        color: theme.text,
+                        backgroundColor: theme.background,
                     },
                 ]}
             >
-                {name}
+                {topic}
             </ThemedText>
             <ThemedText
                 style={[
                     styles.theme,
                     {
-                        color: textColor,
-                        backgroundColor: backgroundColor,
+                        color: theme.text,
+                        backgroundColor: theme.background,
                     },
                 ]}
             >
-                {theme}
+                {description}
             </ThemedText>
         </ThemedView>
     );

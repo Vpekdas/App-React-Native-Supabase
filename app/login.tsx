@@ -116,7 +116,6 @@ const styles = StyleSheet.create({
     input: {
         marginBottom: 12,
         padding: 10,
-        flex: 1,
     },
 
     register: {

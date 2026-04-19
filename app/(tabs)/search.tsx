@@ -1,60 +1,81 @@
 import ThemedButton from "@/components/buttons/themed-button";
 import ThemedProfileCard from "@/components/card/themed-profile-card";
-import { ThemedPicker } from "@/components/picker/themed-picker";
+import { ThemedTextInput } from "@/components/text/themed-text-input";
 import { ThemedView } from "@/components/themed-view";
 import { supabase } from "@/lib/supabase";
-import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
 import { FlatList, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-interface Profile {
+interface SearchProfileRow {
     id: string;
     first_name: string;
-    theme: string;
+    last_name: string;
+    user_type: string;
+    topic: string;
+    topic_description: string;
+    rank: number;
+    topic_highlight: string;
 }
 
 export default function Search() {
-    const [theme, setTheme] = useState("");
-    const [profiles, setProfiles] = useState<Profile[]>([]);
+    const [topic, setTopic] = useState("");
+    const [profiles, setProfiles] = useState<SearchProfileRow[]>([]);
+
+    const [errors, setErrors] = useState<{
+        firstName?: string;
+        lastName?: string;
+        email?: string;
+        password?: string;
+        confirmPassword?: string;
+        topic?: string;
+        topicDescription?: string;
+    }>({});
 
     const fetchProfiles = async () => {
         setProfiles([]);
 
-        if (!theme) return;
-        const { data, error } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("theme", theme)
-            .eq("user_type", "chartered_accountant");
+        const q = topic.trim();
+        if (!q) return;
+
+        const { data, error } = await supabase.rpc("search_profiles", {
+            search: q,
+            wanted_user_type: "chartered_accountant",
+        });
+
         if (error) {
-            console.error("Error fetching profiles:", error);
+            console.error("Error searching profiles:", error);
             return;
         }
 
-        setProfiles(data);
+        setProfiles((data ?? []) as SearchProfileRow[]);
     };
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <ThemedView style={styles.container}>
-                <ThemedPicker
-                    label="Theme"
-                    selectedValue={theme}
-                    onValueChange={(itemValue) => setTheme(itemValue as string)}
-                    style={styles.picker}
-                >
-                    <Picker.Item label="Audit" value="audit" />
-                    <Picker.Item label="Comptabilite" value="comptabilite" />
-                    <Picker.Item label="Management" value="management" />
-                </ThemedPicker>
+                <ThemedTextInput
+                    label="Topic"
+                    placeholder="Topic"
+                    value={topic}
+                    onChangeText={setTopic}
+                    error={errors.topic}
+                    style={styles.input}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    autoComplete="off"
+                    textContentType="none"
+                    importantForAutofill="no"
+                />
 
                 <ThemedButton title="Search" onPress={fetchProfiles} />
 
                 <FlatList
                     data={profiles}
                     keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => <ThemedProfileCard name={item.first_name} theme={item.theme} />}
+                    renderItem={({ item }) => (
+                        <ThemedProfileCard topic={item.topic} description={item.topic_description} />
+                    )}
                     contentContainerStyle={styles.profileList}
                 />
             </ThemedView>
@@ -78,5 +99,9 @@ const styles = StyleSheet.create({
     profileList: {
         marginTop: 20,
         gap: 10,
+    },
+    input: {
+        marginBottom: 12,
+        padding: 10,
     },
 });

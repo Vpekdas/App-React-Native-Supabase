@@ -25,6 +25,12 @@ export default function HomeScreen() {
 
                 <ThemedText type="subtitle">Full name</ThemedText>
                 <ThemedText>{profile?.last_name}</ThemedText>
+
+                <ThemedText type="subtitle">Topic</ThemedText>
+                <ThemedText>{profile?.topic}</ThemedText>
+
+                <ThemedText type="subtitle">Topic Description</ThemedText>
+                <ThemedText>{profile?.topic_description}</ThemedText>
             </ThemedView>
 
             <SignOutButton />

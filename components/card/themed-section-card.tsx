@@ -1,6 +1,6 @@
 import { ThemedText } from "@/components/text/themed-text";
-import { useThemeColor } from "@/hooks/use-theme-color";
-import { StyleSheet, View } from "react-native";
+import { Colors } from "@/constants/theme";
+import { StyleSheet, useColorScheme, View } from "react-native";
 
 type Props = {
     title: string;
@@ -8,13 +8,13 @@ type Props = {
 };
 
 export function ThemedCard({ title, description }: Props) {
-    const backgroundColor = useThemeColor({}, "background");
-    const borderColor = useThemeColor({}, "border");
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? "light"];
 
     return (
-        <View style={[styles.card, { backgroundColor, borderColor }]}>
-            <ThemedText style={styles.title}>{title}</ThemedText>
-            <ThemedText style={styles.desc}>{description}</ThemedText>
+        <View style={[styles.card, { backgroundColor: theme.background, borderColor: theme.border }]}>
+            <ThemedText style={[styles.title, { color: theme.text }]}>{title}</ThemedText>
+            <ThemedText style={[styles.desc, { color: theme.text }]}>{description}</ThemedText>
         </View>
     );
 }
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
         borderRadius: 12,
-        borderWidth: 1,
+        borderWidth: 2,
         width: "100%",
     },
     title: {

@@ -6,44 +6,57 @@ import { ThemedView } from "@/components/themed-view";
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { supabase } from "@/lib/supabase";
 
-import { File, Paths } from "expo-file-system";
+import { File as ExpoFile, Paths } from "expo-file-system";
 
 export default function Resume() {
     const { profile } = useAuthContext();
 
-    const handleError = (err: unknown) => {
-        if (err && typeof err === "object" && "code" in err) {
-            const e = err as any;
-
-            if (e.code === "DOCUMENT_PICKER_CANCELED") return;
-
-            Alert.alert("Error", e.message || "Unknown error");
-        } else {
-            console.error(err);
-            Alert.alert("Error", String(err));
-        }
-    };
+    const filePathForUser = (userId: string) => `${userId}/resume.pdf`;
 
     const uploadResume = async () => {
         try {
             if (!profile?.id) throw new Error("Not authenticated");
 
+            const filePath = filePathForUser(profile.id);
+
             if (Platform.OS === "web") {
-                throw new Error("File upload not supported on web yet");
+                const input = document.createElement("input");
+                input.type = "file";
+                input.accept = "application/pdf";
+
+                const file = await new Promise<File>((resolve, reject) => {
+                    input.onchange = () => {
+                        const f = input.files?.[0];
+                        if (!f) return reject(new Error("No file selected"));
+                        resolve(f);
+                    };
+                    input.click();
+                });
+
+                if (file.type !== "application/pdf") {
+                    throw new Error("Only PDF files allowed");
+                }
+
+                const { error } = await supabase.storage.from("resume").upload(filePath, file, {
+                    upsert: true,
+                    contentType: "application/pdf",
+                });
+
+                if (error) throw error;
+
+                Alert.alert("Success", "Resume uploaded correctly");
+                return;
             }
 
             const { pick } = require("@react-native-documents/picker");
-
             const results = await pick({ allowMultiSelection: false });
-            const file = results[0];
+            const picked = results[0];
 
-            if (file.type !== "application/pdf") {
+            if (picked.type !== "application/pdf") {
                 throw new Error("Only PDF files allowed");
             }
 
-            const filePath = `${profile.id}/resume.pdf`;
-
-            const response = await fetch(file.uri);
+            const response = await fetch(picked.uri);
             const arrayBuffer = await response.arrayBuffer();
 
             if (!arrayBuffer || arrayBuffer.byteLength === 0) {
@@ -67,28 +80,29 @@ export default function Resume() {
         try {
             if (!profile?.id) throw new Error("Not authenticated");
 
+            const filePath = filePathForUser(profile.id);
+
+            const { data, error } = await supabase.storage.from("resume").createSignedUrl(filePath, 60 * 5);
+            if (error) throw error;
+
             if (Platform.OS === "web") {
-                throw new Error("Viewing not supported on web");
+                window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+                return;
             }
 
             const { viewDocument } = require("@react-native-documents/viewer");
 
-            const filePath = `${profile.id}/resume.pdf`;
-            const { data, error } = await supabase.storage.from("resume").createSignedUrl(filePath, 60 * 5);
+            let localFile = new ExpoFile(Paths.document, "resume.pdf");
+            if (localFile.exists) localFile.delete();
 
-            if (error) throw error;
-
-            let file = new File(Paths.document, "resume.pdf");
-            if (file.exists) file.delete();
-
-            const result = await File.downloadFileAsync(data.signedUrl, file);
+            const result = await ExpoFile.downloadFileAsync(data.signedUrl, localFile);
 
             await viewDocument({
                 uri: result.uri,
                 mimeType: "application/pdf",
             });
         } catch (err) {
-            console.error(err);
+            Alert.alert("Error", String(err));
         }
     };
 
