@@ -9,6 +9,9 @@ export default function Account() {
             <Link href="/change-password">
                 <ThemedText>Password</ThemedText>
             </Link>
+            <Link href="/resume">
+                <ThemedText>Resume</ThemedText>
+            </Link>
         </ThemedView>
     );
 }

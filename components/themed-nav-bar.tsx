@@ -35,9 +35,9 @@ export default function NavBar() {
             />
 
             <Tabs.Screen
-                name="resume"
+                name="meeting"
                 options={{
-                    title: "resume",
+                    title: "meeting",
                     tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.crop.circle.fill" color={color} />,
                 }}
             />

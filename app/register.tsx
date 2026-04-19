@@ -8,7 +8,6 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import Background from "@/components/background";
 import ThemedButton from "@/components/buttons/themed-button";
 import { ThemedPicker } from "@/components/picker/themed-picker";
-import { ThemedText } from "@/components/text/themed-text";
 import { ThemedTextInput } from "@/components/text/themed-text-input";
 import { ThemedView } from "@/components/themed-view";
 import { supabase } from "@/lib/supabase";
@@ -85,10 +84,6 @@ export default function Register() {
                 enableOnAndroid
                 keyboardShouldPersistTaps="handled"
             >
-                <ThemedText type="title" style={styles.title}>
-                    Register
-                </ThemedText>
-
                 <ThemedView style={styles.inputContainer}>
                     <ThemedTextInput
                         label="First Name"
@@ -133,31 +128,27 @@ export default function Register() {
                         importantForAutofill="no"
                     />
 
-                    <ThemedView style={{ marginBottom: 12 }}>
-                        <ThemedPicker
-                            label="User Type"
-                            selectedValue={userType}
-                            onValueChange={(itemValue) => setUserType(itemValue as string)}
-                            style={styles.picker}
-                        >
-                            <Picker.Item label="Student" value="student" />
-                            <Picker.Item label="Chartered Accountant" value="chartered_accountant" />
-                        </ThemedPicker>
-                    </ThemedView>
+                    <ThemedPicker
+                        label="User Type"
+                        selectedValue={userType}
+                        onValueChange={(itemValue) => setUserType(itemValue as string)}
+                        style={styles.picker}
+                    >
+                        <Picker.Item label="Student" value="student" />
+                        <Picker.Item label="Chartered Accountant" value="chartered_accountant" />
+                    </ThemedPicker>
 
                     {userType === "student" && (
-                        <ThemedView style={{ marginBottom: 12 }}>
-                            <ThemedPicker
-                                label="Education Year"
-                                selectedValue={educationYear}
-                                onValueChange={(itemValue) => setEducationYear(itemValue as string)}
-                                style={styles.picker}
-                            >
-                                <Picker.Item label="1" value="1" />
-                                <Picker.Item label="2" value="2" />
-                                <Picker.Item label="3" value="3" />
-                            </ThemedPicker>
-                        </ThemedView>
+                        <ThemedPicker
+                            label="Education Year"
+                            selectedValue={educationYear}
+                            onValueChange={(itemValue) => setEducationYear(itemValue as string)}
+                            style={styles.picker}
+                        >
+                            <Picker.Item label="1" value="1" />
+                            <Picker.Item label="2" value="2" />
+                            <Picker.Item label="3" value="3" />
+                        </ThemedPicker>
                     )}
 
                     <ThemedTextInput
@@ -235,6 +226,7 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         borderRadius: 20,
         padding: 10,
+        width: "30%",
     },
     input: {
         marginBottom: 12,

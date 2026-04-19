@@ -7,11 +7,7 @@ import { useState } from "react";
 import { FlatList, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-interface SearchProfileRow {
-    id: string;
-    first_name: string;
-    last_name: string;
-    user_type: string;
+interface SearchAccountantPublicRow {
     topic: string;
     topic_description: string;
     rank: number;
@@ -20,7 +16,7 @@ interface SearchProfileRow {
 
 export default function Search() {
     const [topic, setTopic] = useState("");
-    const [profiles, setProfiles] = useState<SearchProfileRow[]>([]);
+    const [profiles, setProfiles] = useState<SearchAccountantPublicRow[]>([]);
 
     const [errors, setErrors] = useState<{
         firstName?: string;
@@ -38,9 +34,8 @@ export default function Search() {
         const q = topic.trim();
         if (!q) return;
 
-        const { data, error } = await supabase.rpc("search_profiles", {
+        const { data, error } = await supabase.rpc("search_accountant_public", {
             search: q,
-            wanted_user_type: "chartered_accountant",
         });
 
         if (error) {
@@ -48,7 +43,7 @@ export default function Search() {
             return;
         }
 
-        setProfiles((data ?? []) as SearchProfileRow[]);
+        setProfiles((data ?? []) as SearchAccountantPublicRow[]);
     };
 
     return (
@@ -61,9 +56,6 @@ export default function Search() {
                     onChangeText={setTopic}
                     error={errors.topic}
                     style={styles.input}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    autoComplete="off"
                     textContentType="none"
                     importantForAutofill="no"
                 />
@@ -72,7 +64,7 @@ export default function Search() {
 
                 <FlatList
                     data={profiles}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={(item, index) => `${item.topic}-${index}`}
                     renderItem={({ item }) => (
                         <ThemedProfileCard topic={item.topic} description={item.topic_description} />
                     )}
