@@ -57,13 +57,18 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         fetchProfile();
     }, [claims]);
 
+    const isAdmin = claims?.app_metadata?.is_admin === true;
+    const authUserType = (claims?.app_metadata?.user_type as "student" | "chartered_accountant" | undefined) ?? null;
+
     return (
         <AuthContext.Provider
             value={{
                 claims,
                 isLoading,
                 profile,
-                isLoggedIn: claims != undefined,
+                isLoggedIn: !!claims,
+                isAdmin,
+                authUserType,
             }}
         >
             {children}

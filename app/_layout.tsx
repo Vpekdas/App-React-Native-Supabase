@@ -13,18 +13,22 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 // Separate RootNavigator so we can access the AuthContext
 function RootNavigator() {
-    const { isLoggedIn, isLoading } = useAuthContext();
+    const { isLoggedIn, isLoading, isAdmin } = useAuthContext();
 
     if (isLoading) return null;
 
     return (
         <Stack>
+            <Stack.Protected guard={isLoggedIn && isAdmin}>
+                <Stack.Screen name="admin" options={{ headerShown: true }} />
+            </Stack.Protected>
             <Stack.Protected guard={isLoggedIn}>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             </Stack.Protected>
             <Stack.Protected guard={!isLoggedIn}>
                 <Stack.Screen name="index" options={{ headerShown: false }} />
             </Stack.Protected>
+
             <Stack.Screen name="register" options={{ headerShown: false }} />
             <Stack.Screen name="login" options={{ headerShown: false }} />
             <Stack.Screen name="resume" options={{ headerShown: false }} />

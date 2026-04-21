@@ -8,6 +8,7 @@ import { FlatList, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 interface SearchAccountantPublicRow {
+    user_id: string;
     topic: string;
     topic_description: string;
     rank: number;
@@ -19,11 +20,6 @@ export default function Search() {
     const [profiles, setProfiles] = useState<SearchAccountantPublicRow[]>([]);
 
     const [errors, setErrors] = useState<{
-        firstName?: string;
-        lastName?: string;
-        email?: string;
-        password?: string;
-        confirmPassword?: string;
         topic?: string;
         topicDescription?: string;
     }>({});
@@ -64,7 +60,7 @@ export default function Search() {
 
                 <FlatList
                     data={profiles}
-                    keyExtractor={(item, index) => `${item.topic}-${index}`}
+                    keyExtractor={(item) => item.user_id}
                     renderItem={({ item }) => (
                         <ThemedProfileCard topic={item.topic} description={item.topic_description} />
                     )}

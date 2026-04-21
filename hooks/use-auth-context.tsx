@@ -15,6 +15,8 @@ export type AuthData = {
     profile?: UserProfile | null;
     isLoading: boolean;
     isLoggedIn: boolean;
+    isAdmin: boolean;
+    authUserType?: "student" | "chartered_accountant" | null;
 };
 
 export const AuthContext = createContext<AuthData>({
@@ -22,6 +24,8 @@ export const AuthContext = createContext<AuthData>({
     profile: undefined,
     isLoading: true,
     isLoggedIn: false,
+    isAdmin: false,
+    authUserType: null,
 });
 
 export const useAuthContext = () => useContext(AuthContext);
