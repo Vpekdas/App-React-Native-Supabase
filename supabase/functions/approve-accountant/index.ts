@@ -1,4 +1,3 @@
-// supabase/functions/approve-accountant/index.ts
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 type Body = { user_id?: string };

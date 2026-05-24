@@ -2,7 +2,7 @@ import { Colors } from "@/constants/theme";
 import React from "react";
 import { Pressable, StyleSheet, useColorScheme, ViewStyle } from "react-native";
 import { ThemedText } from "../text/themed-text";
-import { ThemedView } from "../themed-view";
+import { ThemedView } from "../view/themed-view";
 
 export type ThemedStudentCardProps = {
     first_name: string;

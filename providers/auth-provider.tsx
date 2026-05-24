@@ -6,7 +6,6 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     const [claims, setClaims] = useState<Record<string, any> | undefined | null>();
     const [profile, setProfile] = useState<any>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [isRecoveryMode, setIsRecoveryMode] = useState(false);
 
     // Fetch the claims once, and subscribe to auth state changes
     useEffect(() => {

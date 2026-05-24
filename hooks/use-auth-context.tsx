@@ -4,6 +4,7 @@ export type UserProfile = {
     id: string;
     first_name: string;
     last_name: string;
+    email: string;
     education_year: number;
     user_type: "student" | "chartered_accountant";
     topic: string[];

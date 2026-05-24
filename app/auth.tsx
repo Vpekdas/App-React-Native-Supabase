@@ -30,16 +30,11 @@ export default function Auth() {
 
     useEffect(() => {
         if (!url) {
-            console.log("Url undefined !")
             return;
         }
 
         createSessionFromUrl(url)
-            .then((session) => {
-                if (session) {
-                    console.log("Logged in!");
-                }
-            })
+            .then((session) => {})
             .catch(console.error);
     }, [url]);
 

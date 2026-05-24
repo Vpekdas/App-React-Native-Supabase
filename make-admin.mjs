@@ -1,8 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
+import "dotenv/config";
 
 const SUPABASE_URL = "https://sfcjqhanjvvvsgypqgcu.supabase.co";
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const USER_ID = "1b762807-8d60-4626-9ce6-d0f2a598ebaf";
+const USER_ID = "0e781e00-bdc0-4d69-9950-ba02f3fdaaf2";
 
 if (!SERVICE_ROLE_KEY) {
     throw new Error("Missing env SUPABASE_SERVICE_ROLE_KEY");

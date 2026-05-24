@@ -1,4 +1,4 @@
-import NavBar from "@/components/themed-nav-bar";
+import NavBar from "@/components/navbar/themed-nav-bar";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import AuthProvider from "@/providers/auth-provider";
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";

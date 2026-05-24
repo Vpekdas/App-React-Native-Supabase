@@ -9,7 +9,7 @@ import Background from "@/components/background";
 import ThemedButton from "@/components/buttons/themed-button";
 import { ThemedPicker } from "@/components/picker/themed-picker";
 import { ThemedTextInput } from "@/components/text/themed-text-input";
-import { ThemedView } from "@/components/themed-view";
+import { ThemedView } from "@/components/view/themed-view";
 import { supabase } from "@/lib/supabase";
 
 export default function Register() {
@@ -22,36 +22,31 @@ export default function Register() {
     const [topicDescription, setTopicDescription] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [supra, setSupra] = useState("0");
 
-    const [errors, setErrors] = useState<{
-        firstName?: string;
-        lastName?: string;
-        email?: string;
-        password?: string;
-        confirmPassword?: string;
-        topic?: string;
-        topicDescription?: string;
-    }>({});
+    const [errors, setErrors] = useState<any>({});
 
     async function signUpNewUser() {
         setErrors({});
-        const newErrors: typeof errors = {};
-
-        const topicValue = topic.trim();
+        const newErrors: any = {};
 
         if (!firstName) newErrors.firstName = "First name cannot be empty";
         if (!lastName) newErrors.lastName = "Last name cannot be empty";
         if (!email) newErrors.email = "Email cannot be empty";
-        if (!topicValue) newErrors.topic = "Topic cannot be empty";
+        if (!topic) newErrors.topic = "Topic cannot be empty";
         if (!password) newErrors.password = "Password cannot be empty";
         if (password !== confirmPassword) newErrors.confirmPassword = "Passwords do not match";
+        if (!supra) newErrors.supraNumber = "Supra number cannot be empty";
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return;
         }
 
-        const redirectTo = makeRedirectUri({ scheme: "App-React-Native-Supabase", path: "auth" });
+        const redirectTo = makeRedirectUri({
+            scheme: "App-React-Native-Supabase",
+            path: "auth",
+        });
 
         const { error } = await supabase.auth.signUp({
             email,
@@ -61,20 +56,21 @@ export default function Register() {
                 data: {
                     first_name: firstName,
                     last_name: lastName,
+                    email,
                     education_year: Number(educationYear),
                     user_type: userType,
-                    topic: topicValue,
+                    topic: topic.trim(),
                     topic_description: topicDescription,
+                    supra: supra,
                 },
             },
         });
 
         if (error) {
-            console.log(error.message);
             return;
         }
 
-        router.push("/verify-email");
+        router.replace("/verify-email");
     }
 
     const content = (
@@ -87,52 +83,30 @@ export default function Register() {
                 <ThemedView style={styles.inputContainer}>
                     <ThemedTextInput
                         label="First Name"
-                        placeholder="First Name"
                         value={firstName}
                         onChangeText={setFirstName}
                         error={errors.firstName}
-                        style={styles.input}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        autoComplete="off"
-                        textContentType="none"
-                        importantForAutofill="no"
                     />
 
                     <ThemedTextInput
                         label="Last Name"
-                        placeholder="Last Name"
                         value={lastName}
                         onChangeText={setLastName}
                         error={errors.lastName}
-                        style={styles.input}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        autoComplete="off"
-                        textContentType="none"
-                        importantForAutofill="no"
                     />
 
                     <ThemedTextInput
                         label="Email"
-                        placeholder="Email"
                         value={email}
                         onChangeText={setEmail}
                         keyboardType="email-address"
                         error={errors.email}
-                        style={styles.input}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        autoComplete="off"
-                        textContentType="none"
-                        importantForAutofill="no"
                     />
 
                     <ThemedPicker
                         label="User Type"
                         selectedValue={userType}
-                        onValueChange={(itemValue) => setUserType(itemValue as string)}
-                        style={styles.picker}
+                        onValueChange={(v) => setUserType(String(v))}
                     >
                         <Picker.Item label="Student" value="student" />
                         <Picker.Item label="Chartered Accountant" value="chartered_accountant" />
@@ -142,8 +116,7 @@ export default function Register() {
                         <ThemedPicker
                             label="Education Year"
                             selectedValue={educationYear}
-                            onValueChange={(itemValue) => setEducationYear(itemValue as string)}
-                            style={styles.picker}
+                            onValueChange={(v) => setEducationYear(String(v))}
                         >
                             <Picker.Item label="1" value="1" />
                             <Picker.Item label="2" value="2" />
@@ -151,65 +124,47 @@ export default function Register() {
                         </ThemedPicker>
                     )}
 
-                    <ThemedTextInput
-                        label="Topic"
-                        placeholder="Topic + keyword"
-                        value={topic}
-                        onChangeText={setTopic}
-                        error={errors.topic}
-                        style={styles.input}
-                        textContentType="none"
-                        importantForAutofill="no"
-                    />
+                    {userType === "chartered_accountant" && (
+                        <ThemedTextInput
+                            label="Supra number"
+                            value={supra}
+                            onChangeText={setSupra}
+                            error={errors.supraNumber}
+                        />
+                    )}
+
+                    <ThemedTextInput label="Topic" value={topic} onChangeText={setTopic} error={errors.topic} />
 
                     <ThemedTextInput
-                        label="Topic description"
-                        placeholder="Topic description"
+                        label="Topic Description"
                         value={topicDescription}
                         onChangeText={setTopicDescription}
-                        error={errors.topicDescription}
-                        style={styles.input}
-                        textContentType="none"
-                        importantForAutofill="no"
                     />
 
                     <ThemedTextInput
                         label="Password"
-                        placeholder="Password"
                         value={password}
                         onChangeText={setPassword}
                         secureTextEntry
                         error={errors.password}
-                        style={styles.input}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        autoComplete="off"
-                        textContentType="none"
-                        importantForAutofill="no"
                     />
 
                     <ThemedTextInput
                         label="Confirm Password"
-                        placeholder="Password"
                         value={confirmPassword}
                         onChangeText={setConfirmPassword}
                         secureTextEntry
                         error={errors.confirmPassword}
-                        style={styles.input}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        autoComplete="off"
-                        textContentType="none"
-                        importantForAutofill="no"
                     />
 
-                    <ThemedButton style={styles.button} title="Sign up" onPress={signUpNewUser} />
+                    <ThemedButton title="Sign up" onPress={signUpNewUser} />
                 </ThemedView>
             </KeyboardAwareScrollView>
         </Background>
     );
 
     if (Platform.OS === "web") return content;
+
     return <TouchableWithoutFeedback onPress={Keyboard.dismiss}>{content}</TouchableWithoutFeedback>;
 }
 
@@ -218,28 +173,11 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         justifyContent: "center",
         alignItems: "center",
-        flex: 1,
     },
     inputContainer: {
-        marginTop: 20,
-        justifyContent: "center",
-        flexDirection: "column",
-        borderRadius: 20,
-        padding: 10,
         width: "30%",
-    },
-    input: {
-        marginBottom: 12,
         padding: 10,
-        flex: 1,
-    },
-    picker: {
-        marginBottom: 12,
-    },
-    title: {
-        alignSelf: "center",
-    },
-    button: {
-        marginTop: 10,
+        borderRadius: 20,
+        gap: 10,
     },
 });

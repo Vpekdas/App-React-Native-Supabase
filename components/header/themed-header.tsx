@@ -3,9 +3,9 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { router } from "expo-router";
 import { Image, Pressable, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import ThemedButton from "./buttons/themed-button";
-import { ThemedText } from "./text/themed-text";
-import { ThemedView } from "./themed-view";
+import { ThemedView } from "../view/themed-view";
+import ThemedButton from "../buttons/themed-button";
+import { ThemedText } from "../text/themed-text";
 
 type ThemedHeaderProps = {
     onNavigate: (id: string) => void;

@@ -1,25 +1,44 @@
-import { ThemedText } from "@/components/text/themed-text";
-import { ThemedView } from "@/components/themed-view";
-import { Link } from "expo-router";
+import SignOutButton from "@/components/buttons/sign-out-button";
+import ThemedItem from "@/components/item/themed-item";
+import { ThemedView } from "@/components/view/themed-view";
+import { useAuthContext } from "@/hooks/use-auth-context";
 import { StyleSheet } from "react-native";
 
 export default function Account() {
+    const { isAdmin } = useAuthContext();
+
     return (
         <ThemedView style={styles.container}>
-            <Link href="/change-password">
-                <ThemedText>Password</ThemedText>
-            </Link>
-            <Link href="/resume">
-                <ThemedText>Resume</ThemedText>
-            </Link>
+            <ThemedView style={styles.itemContainer}>
+                <ThemedItem href="/change-password" label="Password" icon="lock-closed-outline" />
+
+                <ThemedItem href="/resume" label="Resume" icon="document-text-outline" />
+
+                <ThemedItem href="/availability" label="Availability" icon="calendar-outline" />
+
+                {isAdmin && <ThemedItem href="/admin" label="Admin" icon="shield-checkmark-outline" />}
+            </ThemedView>
+
+            <ThemedView style={styles.footer}>
+                <SignOutButton />
+            </ThemedView>
         </ThemedView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flexGrow: 1,
-        justifyContent: "center",
+        flex: 1,
         padding: 20,
+    },
+
+    itemContainer: {
+        flex: 1,
+        gap: 10,
+    },
+
+    footer: {
+        marginTop: 20,
+        alignItems: "center",
     },
 });

@@ -1,7 +1,7 @@
 import Background from "@/components/background";
 import { ThemedCard } from "@/components/card/themed-section-card";
 import SectionBlock from "@/components/section/section-block";
-import ThemedHeader from "@/components/themed-header";
+import ThemedHeader from "@/components/header/themed-header";
 import ThemedSection from "@/components/themed-section";
 import { useRef } from "react";
 import { ScrollView } from "react-native";

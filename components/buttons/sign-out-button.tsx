@@ -1,6 +1,7 @@
+import ThemedButton from "@/components/buttons/themed-button";
+import { Colors } from "@/constants/theme";
 import { supabase } from "@/lib/supabase";
-import React from "react";
-import { Button } from "react-native";
+import { useColorScheme } from "react-native";
 
 async function onSignOutButtonPress() {
     const { error } = await supabase.auth.signOut();
@@ -11,5 +12,10 @@ async function onSignOutButtonPress() {
 }
 
 export default function SignOutButton() {
-    return <Button title="Sign out" onPress={onSignOutButtonPress} />;
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? "light"];
+
+    return (
+        <ThemedButton title="Sign out" onPress={onSignOutButtonPress} style={{ backgroundColor: theme.destructive }} />
+    );
 }

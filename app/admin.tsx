@@ -1,9 +1,10 @@
-import SignOutButton from "@/components/buttons/sign-out-button";
+import ThemedButton from "@/components/buttons/themed-button";
 import { ThemedText } from "@/components/text/themed-text";
-import { ThemedView } from "@/components/themed-view";
+import { ThemedView } from "@/components/view/themed-view";
+import { useAuthContext } from "@/hooks/use-auth-context";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
-import { Alert, Button, FlatList, View } from "react-native";
+import { Alert, FlatList, View } from "react-native";
 
 type PendingRow = {
     id: string;
@@ -11,24 +12,21 @@ type PendingRow = {
     last_name: string;
     education_year: number | null;
     requested_user_type: string | null;
+    supra: string;
 };
 
 export default function Admin() {
     const [rows, setRows] = useState<PendingRow[]>([]);
     const [loading, setLoading] = useState(false);
     const [approvingId, setApprovingId] = useState<string | null>(null);
+    const { isAdmin, isLoading: authLoading } = useAuthContext();
 
     const load = async () => {
+        if (!isAdmin) return;
         setLoading(true);
+
         try {
-            const {
-                data: { session },
-            } = await supabase.auth.getSession();
-            console.log("Admin.load session user:", session?.user?.id, session?.user?.email);
-            console.log("Admin.load has access_token?", !!session?.access_token);
-
             const { data, error } = await supabase.functions.invoke("list-pending-accountants");
-
             if (error) throw error;
             setRows((data?.data ?? []) as PendingRow[]);
         } catch (e) {
@@ -55,13 +53,15 @@ export default function Admin() {
     };
 
     useEffect(() => {
-        load();
-    }, []);
+        if (!authLoading && isAdmin) {
+            load();
+        }
+    }, [authLoading, isAdmin]);
 
     return (
         <ThemedView style={{ flex: 1, padding: 16, gap: 12 }}>
             <ThemedText type="title">Pending accountant requests</ThemedText>
-            <Button title={loading ? "Loading..." : "Refresh"} onPress={load} disabled={loading} />
+            <ThemedButton title={loading ? "Loading..." : "Refresh"} onPress={load} />
 
             <FlatList
                 data={rows}
@@ -69,20 +69,18 @@ export default function Admin() {
                 contentContainerStyle={{ gap: 12, paddingVertical: 12 }}
                 renderItem={({ item }) => (
                     <View style={{ gap: 6, padding: 12, borderWidth: 1, borderRadius: 10 }}>
-                        <ThemedText>
-                            {item.first_name} {item.last_name} ({item.education_year ?? "—"})
-                        </ThemedText>
-                        <Button
+                        <ThemedText>{item.first_name}</ThemedText>
+                        <ThemedText>{item.last_name}</ThemedText>
+                        <ThemedText>{item.supra}</ThemedText>
+
+                        <ThemedButton
                             title={approvingId === item.id ? "Approving..." : "Approve"}
                             onPress={() => approve(item.id)}
-                            disabled={approvingId !== null}
                         />
                     </View>
                 )}
                 ListEmptyComponent={<ThemedText>No pending requests.</ThemedText>}
             />
-
-            <SignOutButton />
         </ThemedView>
     );
 }

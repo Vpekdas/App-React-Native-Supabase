@@ -19,9 +19,6 @@ function RootNavigator() {
 
     return (
         <Stack>
-            <Stack.Protected guard={isLoggedIn && isAdmin}>
-                <Stack.Screen name="admin" options={{ headerShown: true }} />
-            </Stack.Protected>
             <Stack.Protected guard={isLoggedIn}>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             </Stack.Protected>
@@ -31,7 +28,7 @@ function RootNavigator() {
 
             <Stack.Screen name="register" options={{ headerShown: false }} />
             <Stack.Screen name="login" options={{ headerShown: false }} />
-            <Stack.Screen name="resume" options={{ headerShown: false }} />
+            <Stack.Screen name="verify-email" options={{ headerShown: false }} />
         </Stack>
     );
 }

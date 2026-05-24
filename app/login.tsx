@@ -2,7 +2,7 @@ import { Keyboard, Platform, StyleSheet, TouchableWithoutFeedback } from "react-
 
 import { ThemedText } from "@/components/text/themed-text";
 import { ThemedTextInput } from "@/components/text/themed-text-input";
-import { ThemedView } from "@/components/themed-view";
+import { ThemedView } from "@/components/view/themed-view";
 import { useState } from "react";
 
 import Background from "@/components/background";

@@ -65,7 +65,7 @@ Deno.serve(async (req) => {
 
         const { data, error } = await admin
             .from("profiles")
-            .select("id, first_name, last_name, education_year, requested_user_type, topic, topic_description")
+            .select("id, first_name, last_name, education_year, requested_user_type, topic, topic_description, supra")
             .eq("requested_user_type", "chartered_accountant")
             .order("last_name", { ascending: true });
 

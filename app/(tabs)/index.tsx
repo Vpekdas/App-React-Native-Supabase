@@ -1,14 +1,57 @@
 import { Image } from "expo-image";
+import { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 
-import SignOutButton from "@/components/buttons/sign-out-button";
+import ThemedMeetingCard from "@/components/card/themed-meeting-card";
 import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedText } from "@/components/text/themed-text";
-import { ThemedView } from "@/components/themed-view";
+import { ThemedView } from "@/components/view/themed-view";
 import { useAuthContext } from "@/hooks/use-auth-context";
+import { supabase } from "@/lib/supabase";
+import { Meeting } from "./meeting";
+
+
 
 export default function HomeScreen() {
-    const { profile, isLoading } = useAuthContext();
+    const { profile } = useAuthContext();
+
+    const [nextMeeting, setNextMeeting] = useState<Meeting | null>(null);
+
+    const fetchNextMeeting = async () => {
+        if (!profile?.id) return;
+
+        const { data, error } = await supabase
+            .from("meetings")
+            .select(
+                `
+                id,
+                student_topic,
+                accountant_topic,
+                starts_at,
+                ends_at,
+                room_name,
+                student:student_id (
+                    first_name,
+                    last_name
+                )
+            `,
+            )
+            .or(`student_id.eq.${profile.id},accountant_id.eq.${profile.id}`)
+            .gte("starts_at", new Date().toISOString())
+            .order("starts_at", { ascending: true })
+            .limit(1)
+            .maybeSingle();
+
+        if (error) {
+            return;
+        }
+
+        setNextMeeting(data as Meeting);
+    };
+
+    useEffect(() => {
+        fetchNextMeeting();
+    }, [profile?.id]);
 
     return (
         <ParallaxScrollView
@@ -16,24 +59,29 @@ export default function HomeScreen() {
             headerImage={<Image source={require("@/assets/images/partial-react-logo.png")} style={styles.reactLogo} />}
         >
             <ThemedView style={styles.titleContainer}>
-                <ThemedText type="title">Welcome!</ThemedText>
+                <ThemedText type="title">Welcome {profile?.first_name} 👋</ThemedText>
             </ThemedView>
 
             <ThemedView style={styles.stepContainer}>
-                <ThemedText type="subtitle">Username</ThemedText>
-                <ThemedText>{profile?.first_name}</ThemedText>
-
-                <ThemedText type="subtitle">Full name</ThemedText>
-                <ThemedText>{profile?.last_name}</ThemedText>
-
-                <ThemedText type="subtitle">Topic</ThemedText>
+                <ThemedText type="subtitle">Your topic</ThemedText>
                 <ThemedText>{profile?.topic}</ThemedText>
-
-                <ThemedText type="subtitle">Topic Description</ThemedText>
-                <ThemedText>{profile?.topic_description}</ThemedText>
             </ThemedView>
 
-            <SignOutButton />
+            <ThemedView style={styles.stepContainer}>
+                <ThemedText type="subtitle">Next meeting</ThemedText>
+
+                {nextMeeting ? (
+                    <ThemedMeetingCard
+                        topic={nextMeeting.student_topic + " -> " + nextMeeting.accountant_topic}
+                        studentName={`${nextMeeting.student.first_name} ${nextMeeting.student.last_name}`}
+                        startsAt={nextMeeting.starts_at}
+                        endsAt={nextMeeting.ends_at}
+                        roomName={nextMeeting.room_name}
+                    />
+                ) : (
+                    <ThemedText>No upcoming meetings 🎉</ThemedText>
+                )}
+            </ThemedView>
         </ParallaxScrollView>
     );
 }
@@ -46,7 +94,7 @@ const styles = StyleSheet.create({
     },
     stepContainer: {
         gap: 8,
-        marginBottom: 8,
+        marginBottom: 16,
     },
     reactLogo: {
         height: 178,

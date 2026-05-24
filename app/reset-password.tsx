@@ -40,7 +40,6 @@ export default function ResetPassword() {
         }
 
         if (!access_token) {
-            console.log("No access token found");
             return null;
         }
 
@@ -57,12 +56,9 @@ export default function ResetPassword() {
     useEffect(() => {
         if (!url) return;
 
-        console.log("URL RECEIVED:", url);
-
         createSessionFromUrl(url)
             .then((session) => {
                 if (session) {
-                    console.log("Session restored");
                     router.replace("/change-password");
                 }
             })

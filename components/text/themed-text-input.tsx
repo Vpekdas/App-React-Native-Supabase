@@ -1,28 +1,17 @@
 import { ThemedText } from "@/components/text/themed-text";
-import { useThemeColor } from "@/hooks/use-theme-color";
+import { Colors } from "@/constants/theme";
 import React from "react";
-import { StyleSheet, TextInput, TextInputProps, View, ViewStyle } from "react-native";
+import { StyleSheet, TextInput, TextInputProps, useColorScheme, View, ViewStyle } from "react-native";
 
 export type ThemedTextInputProps = TextInputProps & {
-    lightColor?: string;
-    darkColor?: string;
     label?: string;
     error?: string;
     viewStyle?: ViewStyle;
 };
 
-export function ThemedTextInput({
-    style,
-    lightColor,
-    darkColor,
-    label,
-    error,
-    viewStyle,
-    ...rest
-}: ThemedTextInputProps) {
-    const textColor = useThemeColor({ light: lightColor, dark: darkColor }, "text");
-    const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, "background");
-    const borderColor = useThemeColor({ light: lightColor, dark: darkColor }, "border");
+export function ThemedTextInput({ style, label, error, viewStyle, ...rest }: ThemedTextInputProps) {
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? "light"];
 
     return (
         <View style={viewStyle}>
@@ -32,13 +21,13 @@ export function ThemedTextInput({
                 style={[
                     styles.input,
                     {
-                        color: textColor,
-                        borderColor: borderColor,
-                        backgroundColor,
+                        color: theme.text,
+                        borderColor: theme.border,
+                        backgroundColor: theme.background,
                     },
                     style,
                 ]}
-                placeholderTextColor={textColor + "80"}
+                placeholderTextColor={theme.text + "80"}
                 {...rest}
             />
 
@@ -53,9 +42,10 @@ export function ThemedTextInput({
 
 const styles = StyleSheet.create({
     input: {
-        borderWidth: 2,
-        borderRadius: 8,
-        marginTop: 6,
+        borderWidth: 1.5,
+        borderRadius: 10,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
     },
     error: {
         color: "red",

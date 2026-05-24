@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Alert, Button, Platform, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { ThemedView } from "@/components/themed-view";
+import { ThemedView } from "@/components/view/themed-view";
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { supabase } from "@/lib/supabase";
 
