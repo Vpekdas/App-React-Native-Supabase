@@ -6,6 +6,7 @@ import { ThemedView } from "@/components/view/themed-view";
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { supabase } from "@/lib/supabase";
 
+import ThemedButton from "@/components/buttons/themed-button";
 import ThemedStudentCard from "@/components/card/themed-student-card";
 import { ThemedPicker } from "@/components/picker/themed-picker";
 import { ThemedText } from "@/components/text/themed-text";
@@ -205,8 +206,8 @@ export default function Resume() {
             <ThemedView style={styles.container}>
                 {isStudent && (
                     <>
-                        <Button title="Upload Resume" onPress={uploadResume} />
-                        <Button title="View My Resume" onPress={viewRemote} />
+                        <ThemedButton title="Upload Resume" onPress={uploadResume} />
+                        <ThemedButton title="View My Resume" onPress={viewRemote} />
                     </>
                 )}
 

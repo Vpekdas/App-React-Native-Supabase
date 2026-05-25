@@ -47,10 +47,7 @@ export default function Search() {
             search: q,
         });
 
-        if (error) {
-            console.error("Error searching profiles:", error);
-            return;
-        }
+        if (error) return;
 
         setProfiles((data ?? []) as SearchAccountantPublicRow[]);
     };
@@ -72,7 +69,6 @@ export default function Search() {
             });
 
             if (error) {
-                console.error(error);
                 return {
                     date: isoDate,
                     slots: [],
@@ -102,13 +98,7 @@ export default function Search() {
             }),
         });
 
-        if (res.error) {
-            console.error(res.error);
-            alert("Error creating meeting");
-            return;
-        }
-
-        alert("Meeting created! Join at " + res.data.meetingLink);
+        if (res.error) return;
 
         setSelectedAccountant(null);
         setSlots([]);

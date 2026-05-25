@@ -7,7 +7,7 @@ const isSSR = typeof window === "undefined";
 const ExpoWebSecureStoreAdapter = {
     getItem: (key: string) => {
         if (isSSR) return null;
-        console.debug("getItem", { key });
+        // console.debug("getItem", { key });
         return AsyncStorage.getItem(key);
     },
     setItem: (key: string, value: string) => {

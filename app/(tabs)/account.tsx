@@ -5,7 +5,10 @@ import { useAuthContext } from "@/hooks/use-auth-context";
 import { StyleSheet } from "react-native";
 
 export default function Account() {
-    const { isAdmin } = useAuthContext();
+    const { isAdmin, profile } = useAuthContext();
+
+    const isAccountant = profile?.user_type == "chartered_accountant";
+
 
     return (
         <ThemedView style={styles.container}>
@@ -14,7 +17,7 @@ export default function Account() {
 
                 <ThemedItem href="/resume" label="Resume" icon="document-text-outline" />
 
-                <ThemedItem href="/availability" label="Availability" icon="calendar-outline" />
+                {isAccountant && <ThemedItem href="/availability" label="Availability" icon="calendar-outline" />}
 
                 {isAdmin && <ThemedItem href="/admin" label="Admin" icon="shield-checkmark-outline" />}
             </ThemedView>

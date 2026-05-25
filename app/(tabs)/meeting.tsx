@@ -52,10 +52,7 @@ export default function Meeting() {
             .or(`student_id.eq.${profile.id},accountant_id.eq.${profile.id}`)
             .order("starts_at", { ascending: true });
 
-        if (error) {
-            console.error(error);
-            return;
-        }
+        if (error) return;
 
         setMeetings((data ?? []) as Meeting[]);
     };

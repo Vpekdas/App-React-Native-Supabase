@@ -6,9 +6,7 @@ import { useColorScheme } from "react-native";
 async function onSignOutButtonPress() {
     const { error } = await supabase.auth.signOut();
 
-    if (error) {
-        console.error("Error signing out:", error);
-    }
+    if (error) return;
 }
 
 export default function SignOutButton() {

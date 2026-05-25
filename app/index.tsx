@@ -10,7 +10,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function Home() {
     const scrollRef = useRef<ScrollView>(null);
     const sectionPositions = useRef<Record<string, number>>({});
-    const insets = useSafeAreaInsets();
 
     const registerSection = (id: string, y: number) => {
         sectionPositions.current[id] = y;

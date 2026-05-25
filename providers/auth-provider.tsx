@@ -1,10 +1,10 @@
-import { AuthContext } from "@/hooks/use-auth-context";
+import { AuthContext, UserProfile } from "@/hooks/use-auth-context";
 import { supabase } from "@/lib/supabase";
 import { PropsWithChildren, useEffect, useState } from "react";
 
 export default function AuthProvider({ children }: PropsWithChildren) {
     const [claims, setClaims] = useState<Record<string, any> | undefined | null>();
-    const [profile, setProfile] = useState<any>();
+    const [profile, setProfile] = useState<UserProfile | null>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     // Fetch the claims once, and subscribe to auth state changes
@@ -14,11 +14,6 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
             const { data, error } = await supabase.auth.getSession();
             setClaims(data?.session?.user ?? null);
-
-            if (error) {
-                console.error("Error fetching claims:", error);
-            }
-
             setIsLoading(false);
         };
 
@@ -27,7 +22,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         const {
             data: { subscription },
         } = supabase.auth.onAuthStateChange((_event, session) => {
-            console.log("Auth state changed:", _event);
+            // console.log("Auth state changed:", _event);
             setClaims(session?.user ?? null);
         });
 
@@ -57,7 +52,6 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     }, [claims]);
 
     const isAdmin = claims?.app_metadata?.is_admin === true;
-    const authUserType = (claims?.app_metadata?.user_type as "student" | "chartered_accountant" | undefined) ?? null;
 
     return (
         <AuthContext.Provider
@@ -67,7 +61,6 @@ export default function AuthProvider({ children }: PropsWithChildren) {
                 profile,
                 isLoggedIn: !!claims,
                 isAdmin,
-                authUserType,
             }}
         >
             {children}

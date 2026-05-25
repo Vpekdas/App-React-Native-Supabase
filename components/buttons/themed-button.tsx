@@ -1,5 +1,6 @@
 import { Colors } from "@/constants/theme";
 import { StyleSheet, Text, TextStyle, TouchableOpacity, useColorScheme, ViewStyle } from "react-native";
+import { ThemedText } from "../text/themed-text";
 
 export type ThemedButtonProps = {
     title: string;
@@ -17,7 +18,7 @@ export default function ThemedButton({ title, onPress, style, textStyle }: Theme
             onPress={onPress}
             style={[styles.button, { backgroundColor: theme.tint, borderColor: theme.border }, style]}
         >
-            <Text style={[styles.text, { color: theme.text }, textStyle]}>{title}</Text>
+            <ThemedText style={[styles.text, { color: theme.text }, textStyle]}>{title}</ThemedText>
         </TouchableOpacity>
     );
 }

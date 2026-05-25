@@ -62,8 +62,7 @@ export default function ResetPassword() {
                     router.replace("/change-password");
                 }
             })
-            .catch((err) => {
-                console.error("Session error:", err);
+            .catch(() => {
                 setError("Invalid or expired reset link.");
             });
     }, [url]);

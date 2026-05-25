@@ -9,6 +9,7 @@ export type UserProfile = {
     user_type: "student" | "chartered_accountant";
     topic: string[];
     topic_description: string;
+    accepted_terms: boolean;
 };
 
 export type AuthData = {
@@ -17,7 +18,6 @@ export type AuthData = {
     isLoading: boolean;
     isLoggedIn: boolean;
     isAdmin: boolean;
-    authUserType?: "student" | "chartered_accountant" | null;
 };
 
 export const AuthContext = createContext<AuthData>({
@@ -26,7 +26,6 @@ export const AuthContext = createContext<AuthData>({
     isLoading: true,
     isLoggedIn: false,
     isAdmin: false,
-    authUserType: null,
 });
 
 export const useAuthContext = () => useContext(AuthContext);

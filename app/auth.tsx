@@ -35,7 +35,7 @@ export default function Auth() {
 
         createSessionFromUrl(url)
             .then((session) => {})
-            .catch(console.error);
+            .catch();
     }, [url]);
 
     return null;
