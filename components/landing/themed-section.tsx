@@ -1,6 +1,7 @@
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
+import { ThemedView } from "../view/themed-view";
 
 type ThemedSectionProps = {
     id: string;
@@ -13,14 +14,14 @@ export default function ThemedSection({ id, onMeasure, children }: ThemedSection
     const theme = Colors[colorScheme ?? "light"];
 
     return (
-        <View
+        <ThemedView
             onLayout={(e) => {
                 onMeasure(id, e.nativeEvent.layout.y);
             }}
             style={[styles.section, { borderBottomColor: theme.border }]}
         >
             {children}
-        </View>
+        </ThemedView>
     );
 }
 

@@ -1,72 +1,107 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
-
-import { Platform } from "react-native";
-
-// 006D77
-// 83C5BE
-// EDF6F9
-// FFDDD2
-// E29578
+//  Below are the colors that are used in the app. The colors are defined in the light and dark mode.
+//  There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
 
 export const Colors = {
     light: {
-        text: "#11181C",
-        background: "#EDF6F9",
-        border: "#83C5BE",
+        // Base
+        text: "#12211B",
+        background: "#FBFAF8",
+        surface: "#FFFFFF",
 
-        tint: "#006D77",
-        primary: "#006D77",
-        accent: "#E29578",
+        // Brand
+        primary: "#0A3D2C", // Forest
+        primaryLight: "#0D4A36", // Forest 2
+        accent: "#0E9F6E", // Emerald
+        accentDark: "#0B8A5F",
 
-        destructive: "#C33C54",
+        // Secondary
+        gold: "#C89B3C",
+        goldLight: "#F7EFDD",
 
-        icon: "#FFDDD2",
+        // Backgrounds
+        mist: "#EAF3EE",
+        ivory: "#FBFAF8",
 
-        tabIconDefault: "#006D77",
-        tabIconSelected: "#E29578",
+        // Text hierarchy
+        textSecondary: "#4E5D56",
+        textMuted: "#93A09A",
+
+        // Borders
+        border: "rgba(10,61,44,0.10)",
+        borderStrong: "rgba(14,159,110,0.25)",
+
+        // Feedback
+        success: "#0E9F6E",
+        destructive: "#DC2626",
+        warning: "#C89B3C",
+
+        // Navigation
+        tint: "#0E9F6E",
+        icon: "#EAF3EE",
+
+        tabIconDefault: "#93A09A",
+        tabIconSelected: "#0E9F6E",
+
+        // Shadows (useful for RN shadowColor)
+        shadow: "#0A3D2C",
     },
+
     dark: {
-        text: "#ECEDEE",
-        background: "#151718",
-        border: "#2A2F33",
+        // Base
+        text: "#F8FAF9",
+        background: "#071A13",
+        surface: "#0D241B",
 
-        primary: "#4FA3A5",
-        tint: "#83C5BE",
-        accent: "#E29578",
+        // Brand
+        primary: "#0E9F6E",
+        primaryLight: "#34D399",
+        accent: "#4ADE9E",
+        accentDark: "#0B8A5F",
 
-        destructive: "#C33C54",
+        // Secondary
+        gold: "#E5C76B",
+        goldLight: "#3A2F16",
 
-        icon: "#FFDDD2",
+        // Backgrounds
+        mist: "#102B21",
+        ivory: "#071A13",
 
-        tabIconDefault: "#006D77",
-        tabIconSelected: "#E29578",
+        // Text hierarchy
+        textSecondary: "#B7C4BE",
+        textMuted: "#75847D",
+
+        // Borders
+        border: "rgba(255,255,255,0.10)",
+        borderStrong: "rgba(74,222,158,0.35)",
+
+        // Feedback
+        success: "#4ADE9E",
+        destructive: "#F87171",
+        warning: "#E5C76B",
+
+        // Navigation
+        tint: "#4ADE9E",
+        icon: "#102B21",
+
+        tabIconDefault: "#75847D",
+        tabIconSelected: "#4ADE9E",
+
+        shadow: "#000000",
     },
 };
 
-export const Fonts = Platform.select({
-    ios: {
-        /** iOS `UIFontDescriptorSystemDesignDefault` */
-        sans: "system-ui",
-        /** iOS `UIFontDescriptorSystemDesignSerif` */
-        serif: "ui-serif",
-        /** iOS `UIFontDescriptorSystemDesignRounded` */
-        rounded: "ui-rounded",
-        /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-        mono: "ui-monospace",
-    },
-    default: {
-        sans: "normal",
-        serif: "serif",
-        rounded: "normal",
-        mono: "monospace",
-    },
-    web: {
-        sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-        serif: "Georgia, 'Times New Roman', serif",
-        rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-        mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-    },
-});
+export const Fonts = {
+    // Inter
+    sansLight: "Inter-Light",
+    sans: "Inter",
+    sansMedium: "Inter-Medium",
+    sansSemiBold: "Inter-SemiBold",
+    sansBold: "Inter-Bold",
+
+    // Playfair
+    serif: "PlayfairDisplay",
+    serifBold: "PlayfairDisplay-Bold",
+    serifExtraBold: "PlayfairDisplay-ExtraBold",
+
+    mono: "monospace",
+};

@@ -3,8 +3,8 @@ import { LinearGradient } from "expo-linear-gradient";
 export default function Background({ children }: { children: React.ReactNode }) {
     return (
         <LinearGradient
-            colors={["#006D77", "#83C5BE", "#FFDDD2"]}
-            start={{ x: 0.2, y: 0.2 }}
+            colors={["#071A13", "#0A3D2C", "#0E9F6E"]}
+            start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{ flex: 1 }}
         >

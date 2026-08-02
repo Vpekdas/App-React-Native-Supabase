@@ -1,11 +1,17 @@
 import Background from "@/components/background";
-import { ThemedCard } from "@/components/card/themed-section-card";
-import SectionBlock from "@/components/section/section-block";
 import ThemedHeader from "@/components/header/themed-header";
-import ThemedSection from "@/components/themed-section";
+import { ThemedHero } from "@/components/hero/themed-hero";
+import { DecSubjectsMarquee } from "@/components/landing/marquee";
+import { ThemedBenefit } from "@/components/landing/themed-benefit";
+import { ThemedFooter } from "@/components/landing/themed-footer";
+import { ThemedProblem } from "@/components/landing/themed-problem";
+import { ThemedQuote } from "@/components/landing/themed-quote";
+import { ThemedSolution } from "@/components/landing/themed-solution";
+import { ThemedTimeline } from "@/components/landing/themed-timeline";
+import { ThemedWhy } from "@/components/landing/themed-why";
+import { ThemedView } from "@/components/view/themed-view";
 import { useRef } from "react";
 import { ScrollView } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Home() {
     const scrollRef = useRef<ScrollView>(null);
@@ -18,72 +24,34 @@ export default function Home() {
     const scrollToSection = (id: string) => {
         const y = sectionPositions.current[id];
         if (y !== undefined) {
-            scrollRef.current?.scrollTo({ y, animated: true });
+            scrollRef.current?.scrollTo({ y: Math.max(0, y - 12), animated: true });
         }
     };
 
     return (
         <Background>
             <ThemedHeader onNavigate={scrollToSection} />
-            <ScrollView ref={scrollRef} contentContainerStyle={{}}>
-                <ThemedSection id="Comment ça marche" onMeasure={registerSection}>
-                    <SectionBlock title="Comment ça marche" description="Un parcours simple. Un matching sérieux.">
-                        <ThemedCard
-                            title="Qualification"
-                            description="Vous renseignez votre sujet, vos mots-clés et l’angle retenu."
-                        />
-                        <ThemedCard
-                            title="Mise en relation"
-                            description="Le matching se fait sur la proximité du sujet (identique ou très proche)."
-                        />
-                        <ThemedCard
-                            title="Session"
-                            description="Échange ponctuel centré sur l’expérience : choix, obstacles, enseignements."
-                        />
-                    </SectionBlock>
-                </ThemedSection>
-                <ThemedSection id="Thématiques couvertes" onMeasure={registerSection}>
-                    <SectionBlock
-                        title="Thématiques couvertes"
-                        description="Un aperçu des domaines fréquemment traités (à adapter à ton offre)."
-                    >
-                        <ThemedCard
-                            title="Fusion / Acquisition"
-                            description="Organisation cabinet, diligences, risques, livrables."
-                        />
-                        <ThemedCard
-                            title="ESG / Durabilité"
-                            description="Structuration mission, reporting, posture cabinet."
-                        />
-                        <ThemedCard title="Associations" description="Gouvernance, contrôles, risques, missions." />
-                        <ThemedCard
-                            title="Crypto / FinTech"
-                            description="Enjeux pratiques, organisation, contrôle interne."
-                        />
-                    </SectionBlock>
-                </ThemedSection>
-                <ThemedSection id="Chartes MémoDEC" onMeasure={registerSection}>
-                    <SectionBlock title="Chartes MémoDEC" description="Lisibles, synthétiques, orientées pratique.">
-                        <ThemedCard
-                            title="Charte Mentor"
-                            description={
-                                "• Le mentor partage un retour d’expérience lié à son mémoire et à sa soutenance.\n" +
-                                "• Pas de validation, pas de correction, pas d’accompagnement académique.\n" +
-                                "• Aucune garantie de recevabilité, de note ou de réussite.\n" +
-                                "• Expression à titre personnel, sans valeur institutionnelle."
-                            }
-                        />
-                        <ThemedCard
-                            title="Charte Mémorialiste"
-                            description={
-                                "• Le mémorialiste utilise le retour d’expérience comme éclairage, non comme directive.\n" +
-                                "• Il reste seul responsable du contenu et des choix de son mémoire.\n" +
-                                "• Pas de demandes de validation, de relecture ou de correction.\n" +
-                                "• L’échange n’a aucune valeur officielle dans le cadre du diplôme."
-                            }
-                        />
-                    </SectionBlock>
-                </ThemedSection>
+
+            <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false}>
+                <ThemedHero />
+                <DecSubjectsMarquee />
+                <ThemedBenefit />
+                <ThemedProblem />
+
+                <ThemedView onLayout={(e) => registerSection("Fonctionnalités", e.nativeEvent.layout.y)}>
+                    <ThemedSolution />
+                </ThemedView>
+
+                <ThemedView onLayout={(e) => registerSection("Pourquoi App-React-Native-Supabase", e.nativeEvent.layout.y)}>
+                    <ThemedWhy />
+                </ThemedView>
+
+                <ThemedView onLayout={(e) => registerSection("Comment ça marche", e.nativeEvent.layout.y)}>
+                    <ThemedTimeline />
+                </ThemedView>
+
+                <ThemedQuote />
+                <ThemedFooter />
             </ScrollView>
         </Background>
     );

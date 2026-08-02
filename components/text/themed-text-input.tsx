@@ -1,7 +1,8 @@
+import { StyleSheet, TextInput, type TextInputProps, useColorScheme, type ViewStyle } from "react-native";
+
 import { ThemedText } from "@/components/text/themed-text";
 import { Colors } from "@/constants/theme";
-import React from "react";
-import { StyleSheet, TextInput, TextInputProps, useColorScheme, View, ViewStyle } from "react-native";
+import { ThemedView } from "../view/themed-view";
 
 export type ThemedTextInputProps = TextInputProps & {
     label?: string;
@@ -14,8 +15,12 @@ export function ThemedTextInput({ style, label, error, viewStyle, ...rest }: The
     const theme = Colors[colorScheme ?? "light"];
 
     return (
-        <View style={viewStyle}>
-            {label && <ThemedText type="defaultSemiBold">{label}</ThemedText>}
+        <ThemedView style={viewStyle}>
+            {label && (
+                <ThemedText type="defaultSemiBold" style={styles.label}>
+                    {label}
+                </ThemedText>
+            )}
 
             <TextInput
                 style={[
@@ -23,32 +28,45 @@ export function ThemedTextInput({ style, label, error, viewStyle, ...rest }: The
                     {
                         color: theme.text,
                         borderColor: theme.border,
-                        backgroundColor: theme.background,
+                        backgroundColor: theme.surface,
                     },
                     style,
                 ]}
-                placeholderTextColor={theme.text + "80"}
+                placeholderTextColor={theme.textMuted}
                 {...rest}
             />
 
             {error && (
-                <ThemedText style={styles.error} type="default">
+                <ThemedText
+                    type="default"
+                    style={[
+                        styles.error,
+                        {
+                            color: theme.destructive,
+                        },
+                    ]}
+                >
                     {error}
                 </ThemedText>
             )}
-        </View>
+        </ThemedView>
     );
 }
 
 const styles = StyleSheet.create({
+    label: {
+        marginBottom: 6,
+    },
+
     input: {
         borderWidth: 1.5,
         borderRadius: 10,
         paddingHorizontal: 12,
         paddingVertical: 10,
+        fontSize: 15,
     },
+
     error: {
-        color: "red",
         marginTop: 4,
         fontSize: 12,
     },

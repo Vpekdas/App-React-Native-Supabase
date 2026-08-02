@@ -4,10 +4,11 @@ import ThemedModal from "@/components/modal/themed-modal";
 import { ThemedText } from "@/components/text/themed-text";
 import { ThemedTextInput } from "@/components/text/themed-text-input";
 import { ThemedView } from "@/components/view/themed-view";
+import { Colors, Fonts } from "@/constants/theme";
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { supabase } from "@/lib/supabase";
 import { useState } from "react";
-import { FlatList, Pressable, StyleSheet } from "react-native";
+import { FlatList, Pressable, StyleSheet, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 interface SearchAccountantPublicRow {
@@ -29,6 +30,9 @@ interface DaySlots {
 export default function Search() {
     const { profile } = useAuthContext();
 
+    const colorScheme = useColorScheme() ?? "light";
+    const colors = Colors[colorScheme];
+
     const [topic, setTopic] = useState("");
     const [profiles, setProfiles] = useState<SearchAccountantPublicRow[]>([]);
     const [errors, setErrors] = useState<{ topic?: string }>({});
@@ -41,7 +45,15 @@ export default function Search() {
         setProfiles([]);
 
         const q = topic.trim();
-        if (!q) return;
+
+        if (!q) {
+            setErrors({
+                topic: "Veuillez entrer un sujet",
+            });
+            return;
+        }
+
+        setErrors({});
 
         const { data, error } = await supabase.rpc("search_accountant_public", {
             search: q,
@@ -105,18 +117,47 @@ export default function Search() {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView
+            style={[
+                styles.safeArea,
+                {
+                    backgroundColor: colors.background,
+                },
+            ]}
+        >
             <ThemedView style={styles.container}>
+                <ThemedText
+                    style={[
+                        styles.title,
+                        {
+                            color: colors.primary,
+                        },
+                    ]}
+                >
+                    Trouver votre expert-comptable
+                </ThemedText>
+
+                <ThemedText
+                    style={[
+                        styles.subtitle,
+                        {
+                            color: colors.textSecondary,
+                        },
+                    ]}
+                >
+                    Recherchez des professionnels et réservez un créneau qui vous convient.
+                </ThemedText>
+
                 <ThemedTextInput
-                    label="Topic"
-                    placeholder="Topic"
+                    label="Sujet"
+                    placeholder="Exemple : Fiscalité, Audit, Finance"
                     value={topic}
                     onChangeText={setTopic}
                     error={errors.topic}
                     style={styles.input}
                 />
 
-                <ThemedButton title="Search" onPress={fetchProfiles} />
+                <ThemedButton title="Rechercher" onPress={fetchProfiles} />
 
                 <FlatList
                     data={profiles}
@@ -133,17 +174,24 @@ export default function Search() {
 
                 <ThemedModal
                     visible={!!selectedAccountant}
-                    title="Select a time slot"
+                    title="Sélectionner un créneau horaire"
                     onClose={() => setSelectedAccountant(null)}
                 >
-                    <ThemedView style={{ maxHeight: 400 }}>
+                    <ThemedView style={styles.modalContent}>
                         <FlatList
                             data={slots}
                             keyExtractor={(item) => item.date}
                             renderItem={({ item }) => (
-                                <ThemedView style={{ marginBottom: 20 }}>
-                                    <ThemedText style={{ fontWeight: "bold", marginBottom: 10 }}>
-                                        {new Date(item.date).toLocaleDateString("en-GB", {
+                                <ThemedView style={styles.day}>
+                                    <ThemedText
+                                        style={[
+                                            styles.dayTitle,
+                                            {
+                                                color: colors.primary,
+                                            },
+                                        ]}
+                                    >
+                                        {new Date(item.date).toLocaleDateString("fr-FR", {
                                             weekday: "long",
                                             day: "2-digit",
                                             month: "short",
@@ -151,22 +199,41 @@ export default function Search() {
                                     </ThemedText>
 
                                     {item.slots.length === 0 ? (
-                                        <ThemedText style={{ opacity: 0.5 }}>No availability</ThemedText>
+                                        <ThemedText
+                                            style={{
+                                                color: colors.textMuted,
+                                            }}
+                                        >
+                                            Aucune disponibilité
+                                        </ThemedText>
                                     ) : (
                                         <FlatList
                                             data={item.slots}
-                                            keyExtractor={(_, i) => `${item.date}-slot-${i}`}
+                                            keyExtractor={(_, i) => `${item.date}-${i}`}
                                             renderItem={({ item: slot }) => (
                                                 <Pressable
-                                                    style={styles.slot}
+                                                    style={[
+                                                        styles.slot,
+                                                        {
+                                                            backgroundColor: colors.mist,
+                                                            borderColor: colors.borderStrong,
+                                                        },
+                                                    ]}
                                                     onPress={() => bookSlot(slot, item.date)}
                                                 >
-                                                    <ThemedText style={styles.slotText}>
+                                                    <ThemedText
+                                                        style={[
+                                                            styles.slotText,
+                                                            {
+                                                                color: colors.primary,
+                                                            },
+                                                        ]}
+                                                    >
                                                         {new Date(slot.start_time).toLocaleTimeString([], {
                                                             hour: "2-digit",
                                                             minute: "2-digit",
-                                                        })}{" "}
-                                                        -{" "}
+                                                        })}
+                                                        {" - "}
                                                         {new Date(slot.end_time).toLocaleTimeString([], {
                                                             hour: "2-digit",
                                                             minute: "2-digit",
@@ -187,28 +254,65 @@ export default function Search() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        padding: 20,
+    safeArea: {
         flex: 1,
     },
 
-    profileList: {
-        marginTop: 20,
-        gap: 10,
+    container: {
+        flex: 1,
+        paddingHorizontal: 24,
+        paddingTop: 24,
+    },
+
+    title: {
+        fontFamily: Fonts.serifBold,
+        fontSize: 36,
+        lineHeight: 44,
+        marginBottom: 8,
+    },
+
+    subtitle: {
+        fontFamily: Fonts.sans,
+        fontSize: 16,
+        lineHeight: 24,
+        marginBottom: 28,
     },
 
     input: {
+        marginBottom: 14,
+    },
+
+    profileList: {
+        marginTop: 24,
+        paddingBottom: 40,
+        gap: 14,
+    },
+
+    modalContent: {
+        maxHeight: 400,
+    },
+
+    day: {
+        marginBottom: 24,
+    },
+
+    dayTitle: {
+        fontFamily: Fonts.sansSemiBold,
+        fontSize: 17,
         marginBottom: 12,
     },
 
     slot: {
-        padding: 15,
+        paddingVertical: 14,
+        paddingHorizontal: 18,
+        borderRadius: 14,
         borderWidth: 1,
-        borderRadius: 10,
         marginBottom: 10,
     },
 
     slotText: {
-        fontSize: 16,
+        fontFamily: Fonts.sansSemiBold,
+        fontSize: 15,
+        textAlign: "center",
     },
 });

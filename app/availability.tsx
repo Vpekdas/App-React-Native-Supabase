@@ -95,8 +95,10 @@ export default function Availability() {
     return (
         <ThemedView style={{ flex: 1, padding: 20 }}>
             <ThemedAvailabilityPickerWeb availability={availability} onAvailabilityChange={handleAvailabilityChange} />
-
-            <ThemedButton title={loading ? "Saving..." : "Save availability"} onPress={saveAvailability} />
+            <ThemedButton
+                title={loading ? "Enregistrement..." : "Enregistrer les disponibilités"}
+                onPress={saveAvailability}
+            />{" "}
         </ThemedView>
     );
 }

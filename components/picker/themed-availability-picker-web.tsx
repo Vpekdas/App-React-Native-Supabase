@@ -33,7 +33,7 @@ const times = [
     "23:00",
 ];
 
-const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+const days = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"];
 
 type Props = {
     availability: Record<
@@ -65,7 +65,7 @@ export function ThemedAvailabilityPickerWeb({ availability, onAvailabilityChange
                         <ThemedView style={styles.timePickerContainer}>
                             <ThemedView style={styles.pickerWrapper}>
                                 <ThemedPicker
-                                    label="Start"
+                                    label="Début"
                                     selectedValue={value.start}
                                     onValueChange={(v) => onAvailabilityChange(day, "start", v)}
                                     style={{
@@ -83,7 +83,7 @@ export function ThemedAvailabilityPickerWeb({ availability, onAvailabilityChange
                             </ThemedView>
                             <ThemedView style={styles.pickerWrapper}>
                                 <ThemedPicker
-                                    label="End"
+                                    label="Fin"
                                     selectedValue={value.end}
                                     onValueChange={(v) => onAvailabilityChange(day, "end", v)}
                                     style={{

@@ -1,6 +1,6 @@
 import { Colors } from "@/constants/theme";
-import React from "react";
-import { Pressable, StyleSheet, useColorScheme, ViewStyle } from "react-native";
+import React, { useRef } from "react";
+import { Animated, Pressable, StyleSheet, useColorScheme, ViewStyle } from "react-native";
 import { ThemedText } from "../text/themed-text";
 import { ThemedView } from "../view/themed-view";
 
@@ -24,75 +24,137 @@ export default function ThemedStudentCard({
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme ?? "light"];
 
+    const scale = useRef(new Animated.Value(1)).current;
+    const translateY = useRef(new Animated.Value(0)).current;
+
+    const animateIn = () => {
+        Animated.parallel([
+            Animated.spring(scale, {
+                toValue: 1.02,
+                useNativeDriver: true,
+                friction: 7,
+            }),
+
+            Animated.spring(translateY, {
+                toValue: -3,
+                useNativeDriver: true,
+                friction: 7,
+            }),
+        ]).start();
+    };
+
+    const animateOut = () => {
+        Animated.parallel([
+            Animated.spring(scale, {
+                toValue: 1,
+                useNativeDriver: true,
+                friction: 7,
+            }),
+
+            Animated.spring(translateY, {
+                toValue: 0,
+                useNativeDriver: true,
+                friction: 7,
+            }),
+        ]).start();
+    };
+
     return (
-        <Pressable onPress={onPress} disabled={!onPress} style={({ pressed }) => pressed && styles.pressed}>
-            <ThemedView
-                style={[
-                    styles.container,
-                    {
-                        borderColor: theme.border,
-                        backgroundColor: theme.background,
-                    },
-                    style,
-                ]}
+        <Pressable
+            onPress={onPress}
+            disabled={!onPress}
+            onHoverIn={animateIn}
+            onHoverOut={animateOut}
+            onPressIn={animateIn}
+            onPressOut={animateOut}
+        >
+            <Animated.View
+                style={{
+                    transform: [{ scale }, { translateY }],
+                }}
             >
-                <ThemedView style={styles.header}>
-                    <ThemedText style={[styles.name, { color: theme.text }]}>
-                        {first_name} {last_name}
+                <ThemedView
+                    style={[
+                        styles.container,
+                        {
+                            borderColor: theme.border,
+                            backgroundColor: theme.background,
+                        },
+                        style,
+                    ]}
+                >
+                    <ThemedView style={styles.header}>
+                        <ThemedText
+                            style={[
+                                styles.name,
+                                {
+                                    color: theme.text,
+                                },
+                            ]}
+                        >
+                            {first_name} {last_name}
+                        </ThemedText>
+                    </ThemedView>
+
+                    <ThemedText
+                        style={[
+                            styles.topic,
+                            {
+                                color: theme.text,
+                            },
+                        ]}
+                        numberOfLines={2}
+                    >
+                        {topic}
                     </ThemedText>
+
+                    {!!topic_description && (
+                        <ThemedText
+                            style={[
+                                styles.description,
+                                {
+                                    color: theme.text,
+                                },
+                            ]}
+                            numberOfLines={3}
+                        >
+                            {topic_description}
+                        </ThemedText>
+                    )}
                 </ThemedView>
-
-                <ThemedText style={[styles.topic, { color: theme.text }]} numberOfLines={2}>
-                    {topic}
-                </ThemedText>
-
-                {!!topic_description && (
-                    <ThemedText style={[styles.description, { color: theme.text }]} numberOfLines={3}>
-                        {topic_description}
-                    </ThemedText>
-                )}
-            </ThemedView>
+            </Animated.View>
         </Pressable>
     );
 }
 
 const styles = StyleSheet.create({
-    pressed: {
-        opacity: 0.85,
-    },
     container: {
         padding: 16,
         borderRadius: 10,
         borderWidth: 2,
         gap: 8,
     },
+
     header: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
         gap: 12,
     },
+
     name: {
         fontSize: 16,
         fontWeight: "700",
         flexShrink: 1,
     },
+
     topic: {
         fontSize: 14,
         fontWeight: "600",
     },
+
     description: {
         fontSize: 13,
         opacity: 0.85,
-    },
-    badge: {
-        paddingHorizontal: 10,
-        paddingVertical: 4,
-        borderRadius: 999,
-    },
-    badgeText: {
-        color: "white",
-        fontSize: 12,
-        fontWeight: "700",
     },
 });

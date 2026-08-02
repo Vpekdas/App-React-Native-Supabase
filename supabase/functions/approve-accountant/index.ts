@@ -3,7 +3,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 type Body = { user_id?: string };
 
 const corsHeaders = {
-    "Access-Control-Allow-Origin": "http://localhost:8081",
+    "Access-Control-Allow-Origin": "https://www.App-React-Native-Supabase.fr",
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
     "Access-Control-Allow-Methods": "POST,OPTIONS",
 };

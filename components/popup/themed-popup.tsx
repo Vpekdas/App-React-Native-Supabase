@@ -59,7 +59,7 @@ export default function ThemedPopup({
                             ]}
                         />
 
-                        <ThemedText>I accept the terms and conditions</ThemedText>
+                        <ThemedText>J'accepte les conditions générales</ThemedText>
                     </Pressable>
 
                     <Pressable
@@ -72,7 +72,7 @@ export default function ThemedPopup({
                             },
                         ]}
                     >
-                        <ThemedText style={styles.buttonText}>Accept</ThemedText>
+                        <ThemedText style={styles.buttonText}>Accepter</ThemedText>
                     </Pressable>
                 </ThemedView>
             </ThemedView>

@@ -5,7 +5,6 @@ import { useColorScheme } from "react-native";
 
 async function onSignOutButtonPress() {
     const { error } = await supabase.auth.signOut();
-
     if (error) return;
 }
 
@@ -14,6 +13,11 @@ export default function SignOutButton() {
     const theme = Colors[colorScheme ?? "light"];
 
     return (
-        <ThemedButton title="Sign out" onPress={onSignOutButtonPress} style={{ backgroundColor: theme.destructive }} />
+        <ThemedButton
+            title="Se déconnecter"
+            onPress={onSignOutButtonPress}
+            style={{ backgroundColor: theme.destructive, borderColor: theme.destructive }}
+            textStyle={{ color: "#FFFFFF" }}
+        />
     );
 }

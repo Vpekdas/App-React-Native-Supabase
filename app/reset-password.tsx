@@ -4,6 +4,7 @@ import { ActivityIndicator, Keyboard, StyleSheet, Text, TouchableWithoutFeedback
 import { supabase } from "@/lib/supabase";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
+import { ThemedText } from "@/components/text/themed-text";
 import * as QueryParams from "expo-auth-session/build/QueryParams";
 import * as Linking from "expo-linking";
 import { router } from "expo-router";
@@ -12,9 +13,6 @@ import * as WebBrowser from "expo-web-browser";
 WebBrowser.maybeCompleteAuthSession();
 
 export default function ResetPassword() {
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -63,7 +61,7 @@ export default function ResetPassword() {
                 }
             })
             .catch(() => {
-                setError("Invalid or expired reset link.");
+                setError("Le lien de réinitialisation est invalide ou expiré.");
             });
     }, [url]);
 
@@ -74,9 +72,8 @@ export default function ResetPassword() {
                 enableOnAndroid
                 keyboardShouldPersistTaps="handled"
             >
-                <Text style={styles.title}>Reset Password</Text>
-
-                <Text style={styles.description}>Preparing secure session...</Text>
+                <ThemedText style={styles.title}>Réinitialiser le mot de passe</ThemedText>
+                <ThemedText style={styles.description}>Préparation de la session sécurisée...</ThemedText>
 
                 {loading && <ActivityIndicator size="large" />}
 

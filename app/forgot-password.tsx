@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { ActivityIndicator, Keyboard, StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
-
 import ThemedButton from "@/components/buttons/themed-button";
+import { ThemedText } from "@/components/text/themed-text";
 import { ThemedTextInput } from "@/components/text/themed-text-input";
+import { ThemedView } from "@/components/view/themed-view";
 import { supabase } from "@/lib/supabase";
 import { makeRedirectUri } from "expo-auth-session";
+import { useState } from "react";
+import { ActivityIndicator, Keyboard, StyleSheet, TouchableWithoutFeedback } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function ForgotPassword() {
@@ -36,13 +37,13 @@ export default function ForgotPassword() {
 
     if (sent) {
         return (
-            <View style={styles.container}>
-                <Text style={styles.title}>Check your email</Text>
-
-                <Text style={styles.description}>
-                    We’ve sent a password reset link to {email}. Please check your inbox and follow the instructions.
-                </Text>
-            </View>
+            <ThemedView style={styles.container}>
+                <ThemedText style={styles.title}>Vérifiez votre e-mail</ThemedText>
+                <ThemedText style={styles.description}>
+                    Nous vous avons envoyé un lien de réinitialisation du mot de passe par e-mail. Consultez votre boîte
+                    de réception et suivez les instructions.
+                </ThemedText>
+            </ThemedView>
         );
     }
 
@@ -53,13 +54,15 @@ export default function ForgotPassword() {
                 enableOnAndroid
                 keyboardShouldPersistTaps="handled"
             >
-                <Text style={styles.title}>Forgot Password</Text>
+                <ThemedText style={styles.title}>Mot de passe oublié</ThemedText>
 
-                <Text style={styles.description}>Enter your email and we’ll send you a reset link.</Text>
+                <ThemedText style={styles.description}>
+                    Entrez votre e-mail et nous vous enverrons un lien de réinitialisation.
+                </ThemedText>
 
                 <ThemedTextInput
-                    label="Email"
-                    placeholder="Enter your email"
+                    label="E-mail"
+                    placeholder="Entrez votre e-mail"
                     value={email}
                     onChangeText={setEmail}
                     keyboardType="email-address"
@@ -75,7 +78,7 @@ export default function ForgotPassword() {
                 {isLoading ? (
                     <ActivityIndicator size="large" />
                 ) : (
-                    <ThemedButton title="Send reset link" onPress={sendResetLink} />
+                    <ThemedButton title="Envoyer le lien de réinitialisation" onPress={sendResetLink} />
                 )}
             </KeyboardAwareScrollView>
         </TouchableWithoutFeedback>

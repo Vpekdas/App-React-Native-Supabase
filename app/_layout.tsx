@@ -1,19 +1,29 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet } from "react-native";
 import "react-native-reanimated";
 
 import { SplashScreenController } from "@/components/splash-screen-controller";
-
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import AuthProvider from "@/providers/auth-provider";
+import {
+    Inter_300Light,
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+} from "@expo-google-fonts/inter";
+import {
+    PlayfairDisplay_600SemiBold,
+    PlayfairDisplay_700Bold,
+    PlayfairDisplay_800ExtraBold,
+} from "@expo-google-fonts/playfair-display";
+import { useFonts } from "expo-font";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-// Separate RootNavigator so we can access the AuthContext
 function RootNavigator() {
-    const { isLoggedIn, isLoading, isAdmin } = useAuthContext();
+    const { isLoggedIn, isLoading } = useAuthContext();
 
     if (isLoading) return null;
 
@@ -22,6 +32,7 @@ function RootNavigator() {
             <Stack.Protected guard={isLoggedIn}>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             </Stack.Protected>
+
             <Stack.Protected guard={!isLoggedIn}>
                 <Stack.Screen name="index" options={{ headerShown: false }} />
             </Stack.Protected>
@@ -35,8 +46,21 @@ function RootNavigator() {
 
 export default function RootLayout() {
     const colorScheme = useColorScheme();
-
     const isDark = colorScheme === "dark";
+
+    const [fontsLoaded] = useFonts({
+        Inter: Inter_400Regular,
+        "Inter-Light": Inter_300Light,
+        "Inter-Medium": Inter_500Medium,
+        "Inter-SemiBold": Inter_600SemiBold,
+        "Inter-Bold": Inter_700Bold,
+
+        PlayfairDisplay: PlayfairDisplay_600SemiBold,
+        "PlayfairDisplay-Bold": PlayfairDisplay_700Bold,
+        "PlayfairDisplay-ExtraBold": PlayfairDisplay_800ExtraBold,
+    });
+
+    if (!fontsLoaded) return null;
 
     return (
         <SafeAreaProvider>
@@ -50,17 +74,3 @@ export default function RootLayout() {
         </SafeAreaProvider>
     );
 }
-
-const styles = StyleSheet.create({
-    background: {
-        position: "absolute",
-        left: 0,
-        right: 0,
-        top: 0,
-        height: "100%",
-    },
-    image: {
-        flex: 1,
-        justifyContent: "center",
-    },
-});

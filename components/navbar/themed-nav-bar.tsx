@@ -8,45 +8,65 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 
 export default function NavBar() {
     const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? "light"];
 
     return (
         <Tabs
             screenOptions={{
-                tabBarActiveTintColor: Colors[colorScheme ?? "light"].tabIconSelected,
-                tabBarInactiveTintColor: Colors[colorScheme ?? "light"].tabIconDefault,
+                tabBarActiveTintColor: theme.tabIconSelected,
+                tabBarInactiveTintColor: theme.tabIconDefault,
+
                 headerShown: false,
+
                 tabBarButton: HapticTab,
+
+                tabBarStyle: {
+                    backgroundColor: theme.surface,
+                    borderTopColor: theme.border,
+                    height: 70,
+                    paddingBottom: 8,
+                    paddingTop: 8,
+                },
+
+                tabBarLabelStyle: {
+                    fontSize: 12,
+                    fontWeight: "500",
+                },
+
+                tabBarItemStyle: {
+                    borderRadius: 14,
+                },
             }}
         >
             <Tabs.Screen
                 name="index"
                 options={{
-                    title: "home",
-                    tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+                    title: "Accueil",
+                    tabBarIcon: ({ color }) => <IconSymbol size={26} name="house.fill" color={color} />,
                 }}
             />
 
             <Tabs.Screen
                 name="search"
                 options={{
-                    title: "search",
-                    tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.crop.circle.fill" color={color} />,
+                    title: "Recherche",
+                    tabBarIcon: ({ color }) => <IconSymbol size={26} name="magnifyingglass" color={color} />,
                 }}
             />
 
             <Tabs.Screen
                 name="meeting"
                 options={{
-                    title: "meeting",
-                    tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.crop.circle.fill" color={color} />,
+                    title: "Réunions",
+                    tabBarIcon: ({ color }) => <IconSymbol size={26} name="calendar" color={color} />,
                 }}
             />
 
             <Tabs.Screen
                 name="account"
                 options={{
-                    title: "account",
-                    tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.crop.circle.fill" color={color} />,
+                    title: "Compte",
+                    tabBarIcon: ({ color }) => <IconSymbol size={26} name="person.crop.circle.fill" color={color} />,
                 }}
             />
         </Tabs>

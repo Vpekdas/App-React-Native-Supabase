@@ -1,13 +1,18 @@
-import { useEffect, useState } from "react";
-import { ActivityIndicator, Keyboard, StyleSheet, Text, TouchableWithoutFeedback } from "react-native";
-
 import ThemedButton from "@/components/buttons/themed-button";
+import { ThemedText } from "@/components/text/themed-text";
 import { ThemedTextInput } from "@/components/text/themed-text-input";
+import { ThemedView } from "@/components/view/themed-view";
+import { Colors, Fonts } from "@/constants/theme";
 import { supabase } from "@/lib/supabase";
 import { router } from "expo-router";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Keyboard, Pressable, StyleSheet, useColorScheme } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function ChangePassword() {
+    const colorScheme = useColorScheme() ?? "light";
+    const colors = Colors[colorScheme];
+
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -21,9 +26,7 @@ export default function ChangePassword() {
         const checkSession = async () => {
             const { data } = await supabase.auth.getSession();
 
-            const session = data.session;
-
-            if (!session) {
+            if (!data.session) {
                 router.replace("/login");
                 return;
             }
@@ -38,12 +41,12 @@ export default function ChangePassword() {
         setError(null);
 
         if (!password || !confirmPassword) {
-            setError("Password cannot be empty.");
+            setError("Le mot de passe ne peut pas être vide.");
             return;
         }
 
         if (password !== confirmPassword) {
-            setError("Passwords do not match.");
+            setError("Les mots de passe ne correspondent pas.");
             return;
         }
 
@@ -64,68 +67,139 @@ export default function ChangePassword() {
     }
 
     if (!sessionChecked) {
-        return <ActivityIndicator size="large" style={{ flex: 1, justifyContent: "center" }} />;
+        return <ActivityIndicator size="large" style={styles.loader} color={colors.accent} />;
     }
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <Pressable style={styles.flex} onPress={Keyboard.dismiss}>
             <KeyboardAwareScrollView
-                contentContainerStyle={styles.container}
+                contentContainerStyle={[
+                    styles.container,
+                    {
+                        backgroundColor: colors.background,
+                    },
+                ]}
                 enableOnAndroid
                 keyboardShouldPersistTaps="handled"
             >
-                <Text style={styles.title}>Change Password</Text>
+                <ThemedView style={styles.header}>
+                    <ThemedText
+                        style={[
+                            styles.title,
+                            {
+                                color: colors.primary,
+                            },
+                        ]}
+                    >
+                        Modifier le mot de passe
+                    </ThemedText>
 
-                <Text style={styles.description}>Enter your new password below.</Text>
+                    <ThemedText
+                        style={[
+                            styles.description,
+                            {
+                                color: colors.textSecondary,
+                            },
+                        ]}
+                    >
+                        Saisissez votre nouveau mot de passe ci-dessous.
+                    </ThemedText>
+                </ThemedView>
 
-                <ThemedTextInput
-                    label="New Password"
-                    placeholder="New password"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                    error={error ?? undefined}
-                    style={styles.input}
-                />
-
-                <ThemedTextInput
-                    label="Confirm Password"
-                    placeholder="Confirm password"
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    secureTextEntry
-                    error={error ?? undefined}
-                    style={styles.input}
-                />
-
-                {loading ? (
-                    <ActivityIndicator size="large" />
-                ) : (
-                    <ThemedButton
-                        title={success ? "Password updated!" : "Update password"}
-                        onPress={handleChangePassword}
+                <ThemedView style={styles.form}>
+                    <ThemedTextInput
+                        label="Nouveau mot de passe"
+                        placeholder="Nouveau mot de passe"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry
+                        error={error ?? undefined}
+                        style={styles.input}
                     />
-                )}
+
+                    <ThemedTextInput
+                        label="Confirmer le mot de passe"
+                        placeholder="Confirmer le mot de passe"
+                        value={confirmPassword}
+                        onChangeText={setConfirmPassword}
+                        secureTextEntry
+                        error={error ?? undefined}
+                        style={styles.input}
+                    />
+
+                    {loading ? (
+                        <ActivityIndicator size="large" color={colors.accent} />
+                    ) : (
+                        <ThemedButton
+                            title={success ? "Mot de passe mis à jour !" : "Mettre à jour le mot de passe"}
+                            onPress={handleChangePassword}
+                        />
+                    )}
+
+                    {success && (
+                        <ThemedText
+                            style={[
+                                styles.success,
+                                {
+                                    color: colors.success,
+                                },
+                            ]}
+                        >
+                            Votre mot de passe a été mis à jour avec succès.
+                        </ThemedText>
+                    )}
+                </ThemedView>
             </KeyboardAwareScrollView>
-        </TouchableWithoutFeedback>
+        </Pressable>
     );
 }
 
 const styles = StyleSheet.create({
+    flex: {
+        flex: 1,
+    },
+
+    loader: {
+        flex: 1,
+        justifyContent: "center",
+    },
+
     container: {
         flexGrow: 1,
-        padding: 20,
         justifyContent: "center",
-        gap: 12,
+        paddingHorizontal: 24,
+        paddingVertical: 40,
     },
+
+    header: {
+        marginBottom: 32,
+    },
+
     title: {
-        fontSize: 24,
-        fontWeight: "bold",
+        fontFamily: Fonts.serifBold,
+        fontSize: 36,
+        lineHeight: 44,
+        marginBottom: 8,
     },
+
     description: {
+        fontFamily: Fonts.sans,
         fontSize: 16,
+        lineHeight: 24,
     },
+
+    form: {
+        gap: 16,
+    },
+
     input: {
         padding: 10,
+    },
+
+    success: {
+        fontFamily: Fonts.sansMedium,
+        fontSize: 15,
+        textAlign: "center",
+        marginTop: 8,
     },
 });

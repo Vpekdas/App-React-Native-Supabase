@@ -1,17 +1,32 @@
-import { Keyboard, Platform, StyleSheet, TouchableWithoutFeedback } from "react-native";
-
-import { ThemedText } from "@/components/text/themed-text";
-import { ThemedTextInput } from "@/components/text/themed-text-input";
-import { ThemedView } from "@/components/view/themed-view";
+import { Link } from "expo-router";
 import { useState } from "react";
+import {
+    Keyboard,
+    Platform,
+    StyleSheet,
+    TouchableWithoutFeedback,
+    useColorScheme,
+    useWindowDimensions,
+} from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import Background from "@/components/background";
 import ThemedButton from "@/components/buttons/themed-button";
+import { ThemedText } from "@/components/text/themed-text";
+import { ThemedTextInput } from "@/components/text/themed-text-input";
+import { ThemedView } from "@/components/view/themed-view";
+import { Colors } from "@/constants/theme";
+import { Typography } from "@/constants/typography";
 import { supabase } from "@/lib/supabase";
-import { Link } from "expo-router";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function Login() {
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? "light"];
+    const { width } = useWindowDimensions();
+
+    const horizontal = Math.min(64, Math.max(20, width * 0.05));
+    const cardWidth = Math.min(520, width - horizontal * 2);
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | undefined>();
@@ -19,9 +34,9 @@ export default function Login() {
     async function signIn() {
         setError(undefined);
 
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email: email,
-            password: password,
+        const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
         });
 
         if (error) {
@@ -32,17 +47,23 @@ export default function Login() {
     const content = (
         <Background>
             <KeyboardAwareScrollView
-                contentContainerStyle={styles.container}
+                contentContainerStyle={[
+                    styles.container,
+                    { paddingHorizontal: horizontal, backgroundColor: theme.background },
+                ]}
                 enableOnAndroid
                 keyboardShouldPersistTaps="handled"
             >
-                <ThemedText type="title" style={styles.title}>
-                    Login
-                </ThemedText>
-                <ThemedView style={styles.inputContainer}>
+                <ThemedView
+                    style={[
+                        styles.card,
+                        { width: cardWidth, backgroundColor: theme.surface, borderColor: theme.border },
+                    ]}
+                >
+                    <ThemedText style={[styles.title, { color: theme.text }]}>Connexion</ThemedText>
                     <ThemedTextInput
-                        label="Email"
-                        placeholder="Email"
+                        label="E-mail"
+                        placeholder="E-mail"
                         value={email}
                         onChangeText={setEmail}
                         keyboardType="email-address"
@@ -54,10 +75,9 @@ export default function Login() {
                         textContentType="none"
                         importantForAutofill="no"
                     />
-
                     <ThemedTextInput
-                        label="Password"
-                        placeholder="Password"
+                        label="Mot de passe"
+                        placeholder="Mot de passe"
                         value={password}
                         onChangeText={setPassword}
                         secureTextEntry
@@ -69,31 +89,31 @@ export default function Login() {
                         textContentType="none"
                         importantForAutofill="no"
                     />
-
-                    <ThemedView style={styles.register}>
-                        <ThemedText>Does not have an account ? </ThemedText>
+                    <ThemedView style={styles.row}>
+                        <ThemedText style={[styles.rowText, { color: theme.textSecondary }]}>
+                            Vous n'avez pas de compte ?{" "}
+                        </ThemedText>
                         <Link href="/register">
-                            <ThemedText style={{ color: "#0a7ea4" }}>Click here !</ThemedText>
+                            <ThemedText style={[styles.link, { color: theme.accent }]}>Cliquez ici !</ThemedText>
                         </Link>
                     </ThemedView>
-
-                    <ThemedView style={styles.register}>
-                        <ThemedText>Forgot your password ? </ThemedText>
+                    <ThemedView style={styles.row}>
+                        <ThemedText style={[styles.rowText, { color: theme.textSecondary }]}>
+                            Mot de passe oublié ?{" "}
+                        </ThemedText>
                         <Link href="/forgot-password">
-                            <ThemedText style={{ color: "#0a7ea4" }}>Reset password</ThemedText>
+                            <ThemedText style={[styles.link, { color: theme.accent }]}>
+                                Réinitialiser le mot de passe
+                            </ThemedText>
                         </Link>
                     </ThemedView>
-
-                    <ThemedButton style={styles.button} title="Sign in" onPress={signIn} />
+                    <ThemedButton style={styles.button} title="Se connecter" onPress={signIn} />{" "}
                 </ThemedView>
             </KeyboardAwareScrollView>
         </Background>
     );
 
-    if (Platform.OS === "web") {
-        return content;
-    }
-
+    if (Platform.OS === "web") return content;
     return <TouchableWithoutFeedback onPress={Keyboard.dismiss}>{content}</TouchableWithoutFeedback>;
 }
 
@@ -102,32 +122,49 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         justifyContent: "center",
         alignItems: "center",
-        flex: 1,
+        paddingVertical: 40,
     },
 
-    inputContainer: {
-        marginTop: 20,
-        justifyContent: "center",
-        flexDirection: "column",
-        borderRadius: 20,
-        padding: 10,
+    card: {
+        borderWidth: 1,
+        borderRadius: 22,
+        paddingVertical: 28,
+        paddingHorizontal: 22,
+    },
+
+    title: {
+        ...Typography.h2,
+        fontSize: 34,
+        lineHeight: 40,
+        marginBottom: 18,
+        textAlign: "center",
+        includeFontPadding: false,
     },
 
     input: {
         marginBottom: 12,
-        padding: 10,
     },
 
-    register: {
+    row: {
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        marginTop: 10,
+        marginTop: 8,
+        flexWrap: "wrap",
+        gap: 2,
     },
 
-    title: {
-        alignSelf: "center",
+    rowText: {
+        ...Typography.body,
+        includeFontPadding: false,
     },
 
-    button: { marginTop: 10 },
+    link: {
+        ...Typography.bodyMedium,
+        includeFontPadding: false,
+    },
+
+    button: {
+        marginTop: 14,
+    },
 });

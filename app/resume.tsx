@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Alert, Button, Platform, StyleSheet } from "react-native";
+import { Alert, Platform, StyleSheet, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ThemedView } from "@/components/view/themed-view";
@@ -11,6 +11,7 @@ import ThemedStudentCard from "@/components/card/themed-student-card";
 import { ThemedPicker } from "@/components/picker/themed-picker";
 import { ThemedText } from "@/components/text/themed-text";
 import { ThemedTextInput } from "@/components/text/themed-text-input";
+import { Colors, Fonts } from "@/constants/theme";
 import { Picker } from "@react-native-picker/picker";
 import { File as ExpoFile, Paths } from "expo-file-system";
 import { FlatList } from "react-native";
@@ -28,6 +29,8 @@ type StudentResumeRow = {
 
 export default function Resume() {
     const { profile } = useAuthContext();
+    const colorScheme = useColorScheme() ?? "light";
+    const theme = Colors[colorScheme];
 
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -40,8 +43,8 @@ export default function Resume() {
 
     const uploadResume = async () => {
         try {
-            if (!profile?.id) throw new Error("Not authenticated");
-            if (profile.user_type !== "student") throw new Error("Only students can upload resumes");
+            if (!profile?.id) throw new Error("Non authentifié");
+            if (profile.user_type !== "student") throw new Error("Seuls les étudiants peuvent téléverser des CV");
 
             const filePath = filePathForUser(profile.id);
 
@@ -53,13 +56,13 @@ export default function Resume() {
                 const file = await new Promise<File>((resolve, reject) => {
                     input.onchange = () => {
                         const f = input.files?.[0];
-                        if (!f) return reject(new Error("No file selected"));
+                        if (!f) return reject(new Error("Aucun fichier sélectionné"));
                         resolve(f);
                     };
                     input.click();
                 });
 
-                if (file.type !== "application/pdf") throw new Error("Only PDF files allowed");
+                if (file.type !== "application/pdf") throw new Error("Seuls les fichiers PDF sont autorisés");
 
                 const { error } = await supabase.storage.from("resume").upload(filePath, file, {
                     upsert: true,
@@ -73,7 +76,7 @@ export default function Resume() {
                     updated_at: new Date().toISOString(),
                 });
 
-                Alert.alert("Success", "Resume uploaded correctly");
+                Alert.alert("Succès", "CV téléversé correctement");
                 return;
             }
 
@@ -99,15 +102,15 @@ export default function Resume() {
                 updated_at: new Date().toISOString(),
             });
 
-            Alert.alert("Success", "Resume uploaded correctly");
+            Alert.alert("Success", "CV téléversé correctement");
         } catch (err) {
-            Alert.alert("Error", String(err));
+            Alert.alert("Erreur", String(err));
         }
     };
 
     const viewRemote = async () => {
         try {
-            if (!profile?.id) throw new Error("Not authenticated");
+            if (!profile?.id) throw new Error("Non authentifié");
             if (profile.user_type !== "student") throw new Error("Only students can view their own resume here");
 
             const filePath = filePathForUser(profile.id);
@@ -132,20 +135,20 @@ export default function Resume() {
                 mimeType: "application/pdf",
             });
         } catch (err) {
-            Alert.alert("Error", String(err));
+            Alert.alert("Erreur", String(err));
         }
     };
 
     const fetchStudents = async () => {
         try {
-            if (!profile?.id) throw new Error("Not authenticated");
-            if (profile.user_type !== "chartered_accountant") throw new Error("Not allowed");
+            if (!profile?.id) throw new Error("Non authentifié");
+            if (profile.user_type !== "chartered_accountant") throw new Error("Non autorisé");
 
             const ey = educationYear.trim();
             const year = ey ? Number(ey) : null;
 
             if (ey && !Number.isFinite(year)) {
-                Alert.alert("Invalid year", "Education year must be a number");
+                Alert.alert("Année invalide", "L’année d’études doit être un nombre");
                 return;
             }
 
@@ -161,7 +164,7 @@ export default function Resume() {
 
             setRows((data ?? []) as StudentResumeRow[]);
         } catch (err) {
-            Alert.alert("Error", String(err));
+            Alert.alert("Erreur", String(err));
         } finally {
             setLoading(false);
         }
@@ -169,8 +172,8 @@ export default function Resume() {
 
     const openStudentResume = async (row: StudentResumeRow) => {
         try {
-            if (!profile?.id) throw new Error("Not authenticated");
-            if (profile.user_type !== "chartered_accountant") throw new Error("Not allowed");
+            if (!profile?.id) throw new Error("Non authentifié");
+            if (profile.user_type !== "chartered_accountant") throw new Error("Non autorisé");
 
             const { data, error } = await supabase.storage.from("resume").createSignedUrl(row.resume_path, 60 * 5);
             if (error) throw error;
@@ -194,7 +197,7 @@ export default function Resume() {
                 mimeType: "application/pdf",
             });
         } catch (err) {
-            Alert.alert("Error", String(err));
+            Alert.alert("Erreur", String(err));
         }
     };
 
@@ -202,66 +205,97 @@ export default function Resume() {
     const isAccountant = profile?.user_type === "chartered_accountant";
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView
+            style={[
+                styles.safe,
+                {
+                    backgroundColor: theme.background,
+                },
+            ]}
+        >
             <ThemedView style={styles.container}>
                 {isStudent && (
                     <>
-                        <ThemedButton title="Upload Resume" onPress={uploadResume} />
-                        <ThemedButton title="View My Resume" onPress={viewRemote} />
+                        <ThemedView style={styles.header}>
+                            <ThemedText style={styles.title}>Votre CV</ThemedText>
+
+                            <ThemedText style={styles.description}>
+                                Téléversez et gérez votre CV pour que les comptables puissent l’examiner.
+                            </ThemedText>
+                        </ThemedView>
+
+                        <ThemedView
+                            style={[
+                                styles.card,
+                                {
+                                    backgroundColor: theme.surface,
+                                    borderColor: theme.border,
+                                },
+                            ]}
+                        >
+                            <ThemedButton title="Téléverser le CV" onPress={uploadResume} />
+                            <ThemedButton title="Voir mon CV" onPress={viewRemote} />
+                        </ThemedView>
                     </>
                 )}
 
                 {isAccountant && (
                     <>
-                        <ThemedText type="title">Students resumes</ThemedText>
+                        <ThemedView style={styles.header}>
+                            <ThemedText style={styles.title}>CV des étudiants</ThemedText>
 
-                        <ThemedTextInput
-                            label="First name"
-                            placeholder="e.g. John"
-                            value={firstName}
-                            onChangeText={setFirstName}
-                            style={styles.input}
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                        />
+                            <ThemedText style={styles.description}>
+                                Recherchez des étudiants et consultez leurs profils.
+                            </ThemedText>
+                        </ThemedView>
 
-                        <ThemedTextInput
-                            label="Last name"
-                            placeholder="e.g. Doe"
-                            value={lastName}
-                            onChangeText={setLastName}
-                            style={styles.input}
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                        />
-
-                        <ThemedTextInput
-                            label="Topic contains"
-                            placeholder="e.g. audit"
-                            value={topicQuery}
-                            onChangeText={setTopicQuery}
-                            style={styles.input}
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                        />
-
-                        <ThemedPicker
-                            label="Education Year"
-                            selectedValue={educationYear}
-                            onValueChange={(itemValue) => setEducationYear(itemValue as string)}
-                            style={styles.picker}
+                        <ThemedView
+                            style={[
+                                styles.card,
+                                {
+                                    backgroundColor: theme.surface,
+                                    borderColor: theme.border,
+                                },
+                            ]}
                         >
-                            <Picker.Item label="All" value="" />
-                            <Picker.Item label="1" value="1" />
-                            <Picker.Item label="2" value="2" />
-                            <Picker.Item label="3" value="3" />
-                        </ThemedPicker>
+                            <ThemedTextInput
+                                label="Prénom"
+                                placeholder="Jean"
+                                value={firstName}
+                                onChangeText={setFirstName}
+                                style={styles.input}
+                            />
 
-                        <ThemedView style={styles.row}>
-                            <Button
-                                title={loading ? "Loading..." : "Search"}
+                            <ThemedTextInput
+                                label="Nom"
+                                placeholder="Dupont"
+                                value={lastName}
+                                onChangeText={setLastName}
+                                style={styles.input}
+                            />
+
+                            <ThemedTextInput
+                                label="Sujet"
+                                placeholder="Audit"
+                                value={topicQuery}
+                                onChangeText={setTopicQuery}
+                                style={styles.input}
+                            />
+
+                            <ThemedPicker
+                                label="Année d’études"
+                                selectedValue={educationYear}
+                                onValueChange={(value) => setEducationYear(value as string)}
+                            >
+                                <Picker.Item label="Tous" value="" />
+                                <Picker.Item label="1" value="1" />
+                                <Picker.Item label="2" value="2" />
+                                <Picker.Item label="3" value="3" />
+                            </ThemedPicker>
+
+                            <ThemedButton
+                                title={loading ? "Recherche..." : "Rechercher des étudiants"}
                                 onPress={fetchStudents}
-                                disabled={loading}
                             />
                         </ThemedView>
 
@@ -288,27 +322,47 @@ export default function Resume() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        padding: 20,
+    safe: {
         flex: 1,
-        gap: 12,
     },
+
+    container: {
+        flex: 1,
+        paddingHorizontal: 24,
+        paddingTop: 28,
+        gap: 16,
+    },
+
+    header: {
+        marginBottom: 8,
+    },
+
+    title: {
+        fontFamily: Fonts.serifBold,
+        fontSize: 34,
+        lineHeight: 42,
+    },
+
+    description: {
+        fontFamily: Fonts.sans,
+        fontSize: 16,
+        marginTop: 6,
+        opacity: 0.75,
+    },
+
+    card: {
+        borderWidth: 1,
+        borderRadius: 18,
+        padding: 18,
+        gap: 14,
+    },
+
     input: {
-        marginBottom: 10,
-        padding: 10,
+        marginBottom: 8,
     },
-    row: {
-        flexDirection: "row",
-        gap: 12,
-        alignItems: "center",
-        justifyContent: "space-between",
-    },
+
     list: {
-        marginTop: 10,
-        gap: 10,
-        paddingBottom: 24,
-    },
-    picker: {
-        marginBottom: 12,
+        gap: 14,
+        paddingBottom: 30,
     },
 });

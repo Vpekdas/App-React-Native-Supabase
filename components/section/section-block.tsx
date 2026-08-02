@@ -1,5 +1,8 @@
-import { Platform, StyleSheet, View } from "react-native";
+import { Colors, Fonts } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import { Platform, StyleSheet } from "react-native";
 import { ThemedText } from "../text/themed-text";
+import { ThemedView } from "../view/themed-view";
 
 interface SectionBlockProps {
     title: string;
@@ -8,50 +11,83 @@ interface SectionBlockProps {
 }
 
 export default function SectionBlock({ title, description, children }: SectionBlockProps) {
+    const colorScheme = useColorScheme() ?? "light";
+    const colors = Colors[colorScheme];
+
     return (
-        <View style={styles.section}>
-            <ThemedText style={styles.title}>{title}</ThemedText>
-            {description && <ThemedText style={styles.description}>{description}</ThemedText>}
-            <View style={[styles.cardRow, Platform.OS === "web" ? styles.rowWeb : styles.rowMobile]}>{children}</View>
-        </View>
+        <ThemedView style={styles.section}>
+            <ThemedText
+                style={[
+                    styles.title,
+                    {
+                        color: colors.primary,
+                    },
+                ]}
+            >
+                {title}
+            </ThemedText>
+
+            {description && (
+                <ThemedText
+                    style={[
+                        styles.description,
+                        {
+                            color: colors.textSecondary,
+                        },
+                    ]}
+                >
+                    {description}
+                </ThemedText>
+            )}
+
+            <ThemedView style={[styles.cardRow, Platform.OS === "web" ? styles.rowWeb : styles.rowMobile]}>
+                {children}
+            </ThemedView>
+        </ThemedView>
     );
 }
 
 const styles = StyleSheet.create({
     section: {
-        paddingHorizontal: 16,
-        paddingTop: 30,
-        paddingBottom: 16,
-        marginBottom: "10%",
+        paddingHorizontal: 24,
+        paddingTop: 32,
+        paddingBottom: 20,
+        marginBottom: 40,
+        alignItems: "center",
     },
+
     title: {
-        fontSize: 30,
-        fontWeight: "700",
-        textAlign: "center",
-        marginBottom: 4,
-        width: "100%",
-        lineHeight: 36,
-    },
-    description: {
-        fontSize: 18,
-        fontWeight: "400",
+        fontFamily: Fonts.serifBold,
+        fontSize: 34,
+        lineHeight: 40,
         textAlign: "center",
         marginBottom: 12,
-        opacity: 0.8,
-        width: "100%",
+        maxWidth: 600,
     },
+
+    description: {
+        fontFamily: Fonts.sans,
+        fontSize: 17,
+        lineHeight: 28,
+        textAlign: "center",
+        marginBottom: 28,
+        maxWidth: 650,
+    },
+
     cardRow: {
-        gap: 12,
+        width: "100%",
+        gap: 16,
     },
+
     rowMobile: {
         flexDirection: "column",
         alignItems: "center",
     },
+
     rowWeb: {
         flexDirection: "row",
-        flexWrap: "nowrap",
-        justifyContent: "space-between",
+        justifyContent: "center",
         alignItems: "stretch",
-        gap: 12,
+        gap: 20,
     },
 });

@@ -4,7 +4,7 @@ import { ThemedView } from "@/components/view/themed-view";
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
-import { Alert, FlatList, View } from "react-native";
+import { Alert, FlatList } from "react-native";
 
 type PendingRow = {
     id: string;
@@ -30,7 +30,7 @@ export default function Admin() {
             if (error) throw error;
             setRows((data?.data ?? []) as PendingRow[]);
         } catch (e) {
-            Alert.alert("Error", String(e));
+            Alert.alert("Erreur", String(e));
         } finally {
             setLoading(false);
         }
@@ -44,7 +44,7 @@ export default function Admin() {
             });
             if (error) throw error;
             await load();
-            Alert.alert("Approved", "User promoted to chartered_accountant");
+            Alert.alert("Approuvé", "Utilisateur promu au rôle d'expert-comptable");
         } catch (e) {
             Alert.alert("Error", String(e));
         } finally {
@@ -60,26 +60,25 @@ export default function Admin() {
 
     return (
         <ThemedView style={{ flex: 1, padding: 16, gap: 12 }}>
-            <ThemedText type="title">Pending accountant requests</ThemedText>
-            <ThemedButton title={loading ? "Loading..." : "Refresh"} onPress={load} />
-
+            <ThemedText type="title">Demandes d'experts-comptables en attente</ThemedText>{" "}
+            <ThemedButton title={loading ? "Chargement..." : "Actualiser"} onPress={load} />{" "}
             <FlatList
                 data={rows}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={{ gap: 12, paddingVertical: 12 }}
                 renderItem={({ item }) => (
-                    <View style={{ gap: 6, padding: 12, borderWidth: 1, borderRadius: 10 }}>
+                    <ThemedView style={{ gap: 6, padding: 12, borderWidth: 1, borderRadius: 10 }}>
                         <ThemedText>{item.first_name}</ThemedText>
                         <ThemedText>{item.last_name}</ThemedText>
                         <ThemedText>{item.supra}</ThemedText>
 
                         <ThemedButton
-                            title={approvingId === item.id ? "Approving..." : "Approve"}
+                            title={approvingId === item.id ? "Validation..." : "Valider"}
                             onPress={() => approve(item.id)}
                         />
-                    </View>
+                    </ThemedView>
                 )}
-                ListEmptyComponent={<ThemedText>No pending requests.</ThemedText>}
+                ListEmptyComponent={<ThemedText>Aucune demande en attente.</ThemedText>}
             />
         </ThemedView>
     );
