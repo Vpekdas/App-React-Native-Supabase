@@ -26,16 +26,14 @@ export function DecSubjectsMarquee() {
     const theme = Colors[colorScheme ?? "light"];
 
     const progress = useRef(new Animated.Value(0)).current;
-    const loopRef = useRef<Animated.CompositeAnimation | null>(null);
+    const animationRef = useRef<Animated.CompositeAnimation | null>(null);
 
     const [oneSetWidth, setOneSetWidth] = useState(0);
 
     const start = () => {
-        if (!oneSetWidth) return;
-        progress.setValue(0);
-        loopRef.current?.stop();
+        if (!oneSetWidth || animationRef.current) return;
 
-        loopRef.current = Animated.loop(
+        animationRef.current = Animated.loop(
             Animated.timing(progress, {
                 toValue: 1,
                 duration: 46000,
@@ -44,16 +42,20 @@ export function DecSubjectsMarquee() {
             }),
         );
 
-        loopRef.current.start();
+        animationRef.current.start();
     };
 
     const stop = () => {
-        loopRef.current?.stop();
+        animationRef.current?.stop();
+        animationRef.current = null;
     };
 
     useEffect(() => {
         start();
-        return stop;
+
+        return () => {
+            stop();
+        };
     }, [oneSetWidth]);
 
     const translateX = progress.interpolate({
@@ -62,68 +64,170 @@ export function DecSubjectsMarquee() {
     });
 
     return (
-        <ThemedView style={[styles.container, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+        <ThemedView
+            style={[
+                styles.container,
+                {
+                    backgroundColor: theme.surface,
+                    borderColor: theme.border,
+                },
+            ]}
+        >
             <ThemedView style={styles.header}>
-                <ThemedView style={[styles.headerLine, { backgroundColor: theme.border }]} />
-                <ThemedText style={[styles.label, { color: theme.textMuted }]}>
+                <ThemedView
+                    style={[
+                        styles.headerLine,
+                        {
+                            backgroundColor: theme.border,
+                        },
+                    ]}
+                />
+
+                <ThemedText
+                    style={[
+                        styles.label,
+                        {
+                            color: theme.textMuted,
+                        },
+                    ]}
+                >
                     Ils cherchent un retour d'expérience sur…
                 </ThemedText>
-                <ThemedView style={[styles.headerLine, { backgroundColor: theme.border }]} />
+
+                <ThemedView
+                    style={[
+                        styles.headerLine,
+                        {
+                            backgroundColor: theme.border,
+                        },
+                    ]}
+                />
             </ThemedView>
 
-            <Pressable onPressIn={stop} onPressOut={start}>
-                <View style={styles.viewport}>
-                    <Animated.View
-                        style={[
-                            styles.track,
-                            {
-                                transform: [{ translateX }],
-                            },
-                        ]}
+            <View style={styles.viewport}>
+                <Animated.View
+                    style={[
+                        styles.track,
+                        {
+                            transform: [{ translateX }],
+                        },
+                    ]}
+                >
+                    <ThemedView
+                        style={styles.row}
+                        onLayout={(e) => {
+                            const width = e.nativeEvent.layout.width;
+
+                            if (width && width !== oneSetWidth) {
+                                setOneSetWidth(width);
+                            }
+                        }}
                     >
-                        <ThemedView
-                            style={styles.row}
-                            onLayout={(e) => {
-                                const w = e.nativeEvent.layout.width;
-                                if (w && w !== oneSetWidth) setOneSetWidth(w);
-                            }}
-                        >
-                            {SUBJECTS.map((subject, index) => (
-                                <Item key={`a-${index}`} subject={subject} theme={theme} />
-                            ))}
-                        </ThemedView>
+                        {SUBJECTS.map((subject, index) => (
+                            <Item
+                                key={`a-${index}`}
+                                subject={subject}
+                                theme={theme}
+                                onHoverIn={stop}
+                                onHoverOut={start}
+                            />
+                        ))}
+                    </ThemedView>
 
-                        <ThemedView style={styles.row}>
-                            {SUBJECTS.map((subject, index) => (
-                                <Item key={`b-${index}`} subject={subject} theme={theme} />
-                            ))}
-                        </ThemedView>
-                    </Animated.View>
+                    <ThemedView style={styles.row}>
+                        {SUBJECTS.map((subject, index) => (
+                            <Item
+                                key={`b-${index}`}
+                                subject={subject}
+                                theme={theme}
+                                onHoverIn={stop}
+                                onHoverOut={start}
+                            />
+                        ))}
+                    </ThemedView>
+                </Animated.View>
 
-                    <View pointerEvents="none" style={styles.leftFade} />
-                    <View pointerEvents="none" style={styles.rightFade} />
-                </View>
-            </Pressable>
+                <View pointerEvents="none" style={styles.leftFade} />
+                <View pointerEvents="none" style={styles.rightFade} />
+            </View>
         </ThemedView>
     );
 }
 
-function Item({ subject, theme }: { subject: string; theme: any }) {
+function Item({
+    subject,
+    theme,
+    onHoverIn,
+    onHoverOut,
+}: {
+    subject: string;
+    theme: any;
+    onHoverIn: () => void;
+    onHoverOut: () => void;
+}) {
+    const scale = useRef(new Animated.Value(1)).current;
+
+    const animate = (active: boolean) => {
+        Animated.spring(scale, {
+            toValue: active ? 1.05 : 1,
+            friction: 8,
+            tension: 120,
+            useNativeDriver: true,
+        }).start();
+
+        if (active) {
+            onHoverIn();
+        } else {
+            onHoverOut();
+        }
+    };
+
     return (
-        <ThemedView
-            style={[
-                styles.item,
-                {
-                    backgroundColor: theme.mist,
-                    borderColor: theme.borderStrong,
-                },
-            ]}
+        <Pressable
+            onHoverIn={() => animate(true)}
+            onHoverOut={() => animate(false)}
+            onPressIn={() => animate(true)}
+            onPressOut={() => animate(false)}
         >
-            <ThemedText style={[styles.icon, { color: theme.gold }]}>◆</ThemedText>
-            <ThemedText numberOfLines={1} style={[styles.itemText, { color: theme.primary }]}>
-                {subject}
-            </ThemedText>
-        </ThemedView>
+            <Animated.View
+                style={{
+                    transform: [{ scale }],
+                }}
+            >
+                <ThemedView
+                    style={[
+                        styles.item,
+                        {
+                            backgroundColor: theme.mist,
+                            borderColor: theme.borderStrong,
+                        },
+                    ]}
+                >
+                    <ThemedText
+                        style={[
+                            styles.icon,
+                            {
+                                color: theme.gold,
+                            },
+                        ]}
+                    >
+                        ◆
+                    </ThemedText>
+
+                    <ThemedText
+                        numberOfLines={1}
+                        style={[
+                            styles.itemText,
+                            {
+                                color: theme.primary,
+                            },
+                        ]}
+                    >
+                        {subject}
+                    </ThemedText>
+                </ThemedView>
+            </Animated.View>
+        </Pressable>
     );
 }
 
@@ -134,6 +238,7 @@ const styles = StyleSheet.create({
         paddingVertical: 26,
         overflow: "hidden",
     },
+
     header: {
         flexDirection: "row",
         alignItems: "center",
@@ -142,10 +247,12 @@ const styles = StyleSheet.create({
         marginBottom: 18,
         paddingHorizontal: 24,
     },
+
     headerLine: {
         width: 90,
         height: 1,
     },
+
     label: {
         ...Typography.body,
         fontSize: 10.5,
@@ -153,19 +260,23 @@ const styles = StyleSheet.create({
         letterSpacing: 1.4,
         textTransform: "uppercase",
     },
+
     viewport: {
         width: "100%",
         overflow: "hidden",
         position: "relative",
     },
+
     track: {
         flexDirection: "row",
         alignItems: "center",
     },
+
     row: {
         flexDirection: "row",
         alignItems: "center",
     },
+
     item: {
         flexDirection: "row",
         alignItems: "center",
@@ -176,9 +287,11 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 999,
     },
+
     icon: {
         fontSize: 8,
     },
+
     itemText: {
         ...Typography.body,
         fontSize: 13.5,
@@ -193,6 +306,7 @@ const styles = StyleSheet.create({
         width: 24,
         backgroundColor: "rgba(255,255,255,0.8)",
     },
+
     rightFade: {
         position: "absolute",
         right: 0,
